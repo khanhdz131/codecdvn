@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Hồ Sơ Cá Nhân - Roblox Shop VIP</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #2c3e50, #4ca1af);
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #ffc107;
+    }
+
+    .info-group {
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
+    .info-label {
+      font-weight: bold;
+      color: #ffda6b;
+    }
+
+    .info-value {
+      color: #ffffff;
+      margin-left: 10px;
+    }
+
+    .stats {
+      margin-top: 30px;
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+    }
+
+    .stat-box {
+      background-color: rgba(255,255,255,0.07);
+      padding: 20px;
+      border-radius: 12px;
+      width: 30%;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: bold;
+      color: #ffc107;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: #eee;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>HỒ SƠ NGƯỜI DÙNG</h2>
+
+    <div class="info-group">
+      <span class="info-label">Tên tài khoản:</span>
+      <span class="info-value"><%= user.username %></span>
+    </div>
+
+    <% if (user.email) { %>
+      <div class="info-group">
+        <span class="info-label">Email:</span>
+        <span class="info-value"><%= user.email %></span>
+      </div>
+    <% } %>
+
+    <div class="info-group">
+      <span class="info-label">Số dư Robux:</span>
+      <span class="info-value"><%= user.robux %> R$</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat-box">
+        <div class="stat-value"><%= user.muaAccCount %></div>
+        <div class="stat-label">Lượt mua acc</div>
+      </div>
+
+      <div class="stat-box">
+        <div class="stat-value"><%= user.napTotal %>đ</div>
+        <div class="stat-label">Tổng tiền đã nạp</div>
+      </div>
+
+      <div class="stat-box">
+        <div class="stat-value"><%= user.rank || 'Member' %></div>
+        <div class="stat-label">Cấp bậc</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

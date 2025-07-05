@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Trang Chủ - Roblox Shop VIP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background-color: #000;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    .header {
+      width: 100%;
+      height: 300px; 
+      background-size: cover;
+      background-image: url('/images/banner.jpg');
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .box {
+      margin-top: -100px;
+      padding: 40px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      text-align: center;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .box h1 {
+      font-size: 26px;
+      color: #00e0ff;
+      margin-bottom: 20px;
+    }
+
+    .btns a {
+      display: inline-block;
+      margin: 10px 15px;
+      padding: 12px 30px;
+      background: #00e0ff;
+      color: #000;
+      font-weight: bold;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+    .btns a:hover {
+      background: #00b3cc;
+    }
+
+    @media (max-width: 600px) {
+      .btns a {
+        display: block;
+        margin: 10px auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header để chèn ảnh nền -->
+  <div class="header" style="background-image: url('/path-to-your-image.jpg');">
+    <!-- Bạn thay đổi ảnh ở đây -->
+  </div>
+
+  <div class="box">
+    <h1>Chào mừng đến với Roblox Shop VIP</h1>
+    <div class="btns">
+      <a href="/login">Đăng nhập</a>
+      <a href="/register">Đăng ký</a>
+    </div>
+  </div>
+
+</body>
+</html>

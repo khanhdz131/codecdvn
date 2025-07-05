@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Shop Roblox</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background: url('/images/backgr.jpg') no-repeat center center fixed;
+      background-size: cover;
+      position: relative;
+      z-index: 0;
+      color: #fff;
+      padding: 30px;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: -1;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .user-info {
+      font-size: 16px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid #ffcc00;
+    }
+
+    .section-title {
+      font-size: 24px;
+      color: #ffcc00;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #ffcc00;
+      padding-bottom: 5px;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .product-card {
+      background: rgba(0, 0, 0, 0.85);
+      border-radius: 10px;
+      text-align: center;
+      padding: 16px;
+      transition: 0.3s;
+      border: 1px solid #444;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+    }
+
+    .product-card h3 {
+      font-size: 18px;
+      color: #ffcc00;
+      margin: 10px 0;
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .info {
+      font-size: 14px;
+      color: #ccc;
+      margin-bottom: 8px;
+    }
+
+    .price {
+      color: red;
+      font-weight: bold;
+    }
+
+    .views {
+      float: right;
+      color: #999;
+    }
+
+    .buy-btn {
+      margin-top: 10px;
+      border: none;
+      background-color: #ffcc00;
+      color: #000;
+      font-weight: bold;
+      font-size: 14px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .buy-btn:hover {
+      background-color: #ffaa00;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .modal-content {
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      border: 2px solid #ffcc00;
+      max-width: 400px;
+      color: white;
+    }
+
+    .modal button {
+      margin: 10px;
+      padding: 10px 20px;
+      border: none;
+      background: #ffcc00;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>🎮 SHOP BÁN ACC ROBLOX</h2>
+    <div class="user-info">
+      Xin chào, <strong><%= user.username %></strong><br>
+      Số dư: <strong><%= user.balance.toLocaleString() %></strong>
+    </div>
+  </div>
+
+  <div class="section-title">DANH SÁCH TÀI KHOẢN ROBLOX</div>
+  <div class="product-grid">
+    <% const products = [
+  { title: 'Acc  VIP', img: 'acc1.jpg', price: 10000, views: 110 },
+  { title: 'Acc  VIP', img: 'acc2.jpg', price: 12000, views: 150 },
+  { title: 'Acc VIP ', img: 'acc3.jpg', price: 15000, views: 200 },
+  { title: 'Acc VIP', img: 'acc4.jpg', price: 7000, views: 85 },
+  { title: 'random code cdvn', img: 'rd.jpg', price: 40000, views: 400 },
+  { title: 'code katana', img: 'rd.jpg', price: 30000, views: 210 },
+  { title: 'code trường thương', img: 'rd.jpg', price: 70000, views: 520 },
+  { title: 'code kiếm pháp', img: 'rd.jpg', price: 110000, views: 250 },
+  { title: 'code hắc long', img: 'rd.jpg', price: 600000, views: 330 },
+  { title: 'code hồng ngọc', img: 'rd.jpg', price: 400000, views: 75 },
+  { title: 'code vô ảnh cước', img: 'rd.jpg', price: 400000, views: 190 },
+  { title: 'song đao', img: 'rd.jpg', price: 800000, views: 130 },
+  { title: 'code bá vương kích', img: 'rd.jpg', price: 950000, views: 175 },
+  { title: 'code bạch long', img: 'rd.jpg', price: 2500000, views: 145 },
+  { title: 'code tay phật', img: 'rd.jpg', price: 3100000, views: 80 }
+]; %>
+
+  
+    <% products.forEach((p) => { %>
+      <div class="product-card">
+        <h3><%= p.title %></h3>
+        <img src="/images/<%= p.img %>" alt="">
+        <div class="info">
+          Giá: <span class="price"><%= p.price.toLocaleString() %></span>
+          <span class="views">👁 <%= p.views %></span>
+        </div>
+        <button class="buy-btn" onclick="confirmPurchase('<%= p.title %>', <%= p.price %>)">MUA NGAY</button>
+      </div>
+    <% }); %>
+  </div>
+
+  <!-- Modal xác nhận -->
+  <div class="modal" id="purchaseModal">
+    <div class="modal-content">
+      <p id="modalText">Bạn có chắc chắn muốn mua?</p>
+      <button onclick="confirmBuy()">Xác nhận</button>
+      <button onclick="closeModal()">Huỷ</button>
+    </div>
+  </div>
+
+  <script>
+    let selectedProduct = '';
+    let selectedPrice = 0;
+
+    function confirmPurchase(title, price) {
+      selectedProduct = title;
+      selectedPrice = price;
+      document.getElementById('modalText').innerText = `Xác nhận mua ${title} với giá ${price.toLocaleString()} xu?`;
+      document.getElementById('purchaseModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('purchaseModal').style.display = 'none';
+    }
+
+    function confirmBuy() {
+      fetch('/buy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: selectedProduct, price: selectedPrice })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message);
+        if (data.success) {
+          document.querySelector('.user-info strong:last-child').innerText = data.newBalance.toLocaleString();
+        }
+        closeModal();
+      });
+    }
+  </script>
+</body>
+</html>

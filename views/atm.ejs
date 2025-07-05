@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Nạp ATM</title>
+  <style>
+    body { font-family: sans-serif; background: #f2f2f2; padding: 20px; }
+    .form { max-width: 400px; background: #fff; padding: 20px; margin: auto; border-radius: 10px; box-shadow: 0 0 10px #aaa; }
+    input, button { width: 100%; padding: 10px; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <div class="form">
+    <h2>💳 Nạp tiền qua ATM</h2>
+    <form method="POST" action="/atm">
+      <input type="number" name="amount" placeholder="Nhập số tiền cần nạp" required />
+      <button type="submit">Nạp Tiền</button>
+    </form>
+  </div>
+</body>
+</html>

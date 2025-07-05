@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - Shop Acc Roblox</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: url('/images/haha1.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .navbar {
+      background-color: rgba(83, 28, 28, 0.85);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .navbar a {
+      margin: 0 12px;
+      font-weight: bold;
+      text-decoration: none;
+      color: #222;
+      transition: 0.3s;
+    }
+
+    .navbar a:hover {
+      color: #704a56;
+    }
+
+    .content {
+      padding: 40px 20px;
+    }
+
+    .section-boxes {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 25px;
+    }
+
+    .section-box {
+      width: 260px;
+      height: 160px;
+      background: linear-gradient(135deg, #4b4620, #000000);
+      color: white;
+      font-size: 22px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 18px;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      text-align: center;
+    }
+
+    .section-box:hover {
+      transform: translateY(-5px) scale(1.03);
+      background: linear-gradient(135deg, #4b4620, #ff4500);
+    }
+
+    .logo img {
+      height: 48px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="logo">
+      <a href="/"><img src="/images/logi.jpg" alt="Logo"></a>
+    </div>
+    <div>
+      <a href="/">Trang Chủ</a>
+      <a href="/history">Lịch Sử</a>
+      <a href="/spin">Vòng Quay</a>
+      <a href="/topup">Nạp Tiền</a>
+      <a href="/profile"><i class="fas fa-user"></i> Tài Khoản</a>
+    </div>
+  </div>
+
+  <!-- Dashboard Sections -->
+  <div class="content">
+    <div class="section-boxes">
+      <div class="section-box" onclick="location.href='/napthe'">
+        🔋 Nạp Tiền Ngay
+      </div>
+      <div class="section-box" onclick="location.href='/spin'">
+        🎁 Quay Hộp Quà
+      </div>
+      <div class="section-box" onclick="location.href='/shop'">
+        🛒 Shop Acc Roblox
+      </div>
+      <div class="section-box" onclick="location.href='/history'">
+        📜 Lịch Sử Giao Dịch
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
