@@ -5,45 +5,33 @@ const path = require("path");
 const fs = require("fs");
 
 const app = express();
-app.use(express.static(path.join(__dirname, "public"))); // ✅ CHỈ dùng dòng này
 
-
-
-// Cài đặt view engine
+app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-app.use(express.static(path.join(__dirname, "public")));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 
-// Cài đặt session
 app.use(session({
   secret: "secret-key",
   resave: false,
   saveUninitialized: true
 }));
 
-// Middleware yêu cầu đăng nhập
 function requireLogin(req, res, next) {
   if (!req.session.user) return res.redirect("/login");
   next();
 }
 
-// Trang chủ chuyển hướng dashboard
-app.get("/", (req, res) => {
-  res.redirect("/dashboard");
-});
+app.get("/", (req, res) => res.redirect("/dashboard"));
 
 // -------------------- ĐĂNG KÝ --------------------
-app.get("/register", (req, res) => {
-  res.render("register");
-});
+app.get("/register", (req, res) => res.render("register"));
 
 app.post("/register", (req, res) => {
   const { username, password, confirmPassword } = req.body;
   const filePath = "./data/users.json";
 
-  // Kiểm tra nhập thiếu
   if (!username || !password || !confirmPassword) {
     return res.send("❌ Vui lòng nhập đầy đủ thông tin.");
   }
@@ -52,39 +40,22 @@ app.post("/register", (req, res) => {
     return res.send("❌ Mật khẩu không khớp.");
   }
 
-  // Tạo file nếu chưa có
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, "[]");
-  }
+  if (!fs.existsSync(filePath)) fs.writeFileSync(filePath, "[]");
 
-  let users;
-  try {
-    users = JSON.parse(fs.readFileSync(filePath, "utf8"));
-  } catch (err) {
-    return res.send("⚠️ Lỗi đọc dữ liệu.");
-  }
-
+  let users = JSON.parse(fs.readFileSync(filePath, "utf8"));
   if (users.find(u => u.username === username)) {
     return res.send("⚠️ Tài khoản đã tồn tại.");
   }
 
   const newUser = { username, password, balance: 2000, robux: 0 };
   users.push(newUser);
-
-  try {
-    fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
-    console.log("✅ Đăng ký thành công:", newUser);
-  } catch (err) {
-    return res.send("⚠️ Không thể ghi file.");
-  }
+  fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
 
   res.redirect("/login");
 });
 
 // -------------------- ĐĂNG NHẬP --------------------
-app.get("/login", (req, res) => {
-  res.render("login");
-});
+app.get("/login", (req, res) => res.render("login"));
 
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
@@ -92,95 +63,201 @@ app.post("/login", (req, res) => {
   const user = users.find(u => u.username === username && u.password === password);
 
   if (!user) return res.send("❌ Sai tài khoản hoặc mật khẩu!");
-
   req.session.user = { ...user };
   res.redirect("/dashboard");
 });
 
 app.get("/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.redirect("/login");
-  });
+  req.session.destroy(() => res.redirect("/login"));
 });
 
 // -------------------- DASHBOARD --------------------
 app.get("/dashboard", requireLogin, (req, res) => {
   const accounts = JSON.parse(fs.readFileSync("./data/accounts.json", "utf8"));
-  res.render("dashboard", {
-    user: req.session.user,
-    accounts
-  });
+  res.render("dashboard", { user: req.session.user, accounts });
 });
 
-// -------------------- SPIN --------------------
+// -------------------- SPIN (ĐÃ SỬA ĐÚNG) --------------------
 app.get("/spin", requireLogin, (req, res) => {
   res.render("spin", { user: req.session.user });
 });
 
-app.post("/spin=", (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ status: "fail", message: "Chưa đăng nhập" });
-  }
+app.post('/spin', (req, res) => {
+  const username = req.session.user?.username;
+  if (!username) return res.json({ error: 'Bạn chưa đăng nhập!' });
 
-  const users = JSON.parse(fs.readFileSync("./data/users.json", "utf8"));
-  const index = users.findIndex(u => u.username === req.session.user.username);
-  if (index === -1) {
-    return res.status(404).json({ status: "fail", message: "Không tìm thấy user" });
-  }
+  const filePath = './data/users.json';
+  if (!fs.existsSync(filePath)) return res.json({ error: 'Không tìm thấy dữ liệu người dùng.' });
 
-  const user = users[index];
+  const users = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  const userIndex = users.findIndex(u => u.username === username);
+  if (userIndex === -1) return res.json({ error: 'Không tìm thấy tài khoản!' });
+
+  const user = users[userIndex];
 
   if (user.balance < 20000) {
-    return res.json({ status: "fail", message: "Không đủ xu để mở!" });
+    return res.json({ error: "Bạn không đủ Xu để quay!" });
   }
 
-  const rewards = [
-    ...Array(30).fill(100),
-    ...Array(25).fill(200),
-    ...Array(20).fill(500),
-    ...Array(15).fill(1000),
-    ...Array(7).fill(2000),
-    ...Array(3).fill(5000),
-    ...Array(1).fill(10000)
-  ];
+  const rewards = [5, 10, 15, 20, 25, 30, 50, 100, 200, 250];
   const reward = rewards[Math.floor(Math.random() * rewards.length)];
 
   user.balance -= 20000;
   user.robux += reward;
 
-  req.session.user.balance = user.balance;
-  req.session.user.robux = user.robux;
-
-  fs.writeFileSync("./data/users.json", JSON.stringify(users, null, 2));
-
-  return res.json({
-    status: "success",
-    reward,
+  fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
+  req.session.user = {
+    username: user.username,
+    password: user.password,
     balance: user.balance,
     robux: user.robux
+  };
+
+  res.json({ success: true, reward });
+});
+// -------------------- RÚT ROBUX --------------------
+app.get("/withdraw", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+  res.render("withdraw", { user: req.session.user, message: null });
+});
+
+app.post("/withdraw", (req, res) => {
+  const username = req.session.user?.username;
+  const { amount, robloxId } = req.body;
+  const robux = parseInt(amount);
+  const filePath = "./data/users.json";
+
+  if (!username || !robloxId || isNaN(robux)) {
+    return res.render("withdraw", {
+      user: req.session.user,
+      message: "❌ Vui lòng nhập đầy đủ thông tin."
+    });
+  }
+
+  const users = JSON.parse(fs.readFileSync(filePath, "utf8"));
+  const index = users.findIndex(u => u.username === username);
+  if (index === -1) {
+    return res.render("withdraw", {
+      user: req.session.user,
+      message: "❌ Không tìm thấy tài khoản."
+    });
+  }
+
+  const user = users[index];
+
+  if (user.robux < robux) {
+    return res.render("withdraw", {
+      user: req.session.user,
+      message: "❌ Bạn không đủ Robux để rút."
+    });
+  }
+
+  // Trừ robux
+  user.robux -= robux;
+  fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
+
+  // Cập nhật session
+  req.session.user = { ...user };
+
+  // Gửi thông báo
+  res.render("withdraw", {
+    user: user,
+    message: `✅ Đã ghi nhận rút ${robux} Robux cho ID ${robloxId}. Vui lòng đợi 120 giờ để nhận Robux.`
   });
 });
 
-app.post("/spin-reward", (req, res) => {
-  const { cost, reward } = req.body;
-  const user = req.session.user;
+// -------------------- CÁC ROUTE KHÁC --------------------
+const axios = require("axios"); // Đặt ở đầu file (chỉ thêm 1 lần)
 
-  if (!user || user.balance < cost) {
-    return res.status(400).json({ message: "Không đủ xu", success: false });
-  }
-
-  user.balance -= cost;
-  user.robux += reward;
-
-  const users = JSON.parse(fs.readFileSync("./data/users.json", "utf8"));
-  const idx = users.findIndex(u => u.username === user.username);
-  users[idx] = user;
-  fs.writeFileSync("./data/users.json", JSON.stringify(users, null, 2));
-
-  return res.json({ balance: user.balance, robux: user.robux });
+// Route hiển thị form nạp thẻ
+app.get('/napthe', (req, res) => {
+  const username = req.session.user?.username || 'guest';
+  res.render('napthe', { username });
 });
 
-// -------------------- MUA TÀI KHOẢN --------------------
+// Route xử lý gửi thẻ tới web trung gian
+app.post("/napthe", async (req, res) => {
+  const { loaithe, menhgia, mathe, seri } = req.body;
+
+  const request_id = Date.now().toString();
+  const username = req.session.user?.username || "guest";
+
+const requestMapPath = './data/request.json';
+let mapData = {};
+if (fs.existsSync(requestMapPath)) {
+  mapData = JSON.parse(fs.readFileSync(requestMapPath, "utf8"));
+}
+mapData[request_id] = username;
+fs.writeFileSync(requestMapPath, JSON.stringify(mapData, null, 2));
+
+  const partner_id = "YOUR_PARTNER_ID";
+  const partner_key = "YOUR_PARTNER_KEY";
+
+  const crypto = require("crypto");
+  const sign = crypto
+    .createHash("md5")
+    .update(partner_id + mathe + seri + menhgia + partner_key)
+    .digest("hex");
+
+  try {
+    const response = await axios.post("https://trumthe.vn/chargingws/v2", {
+      telco: loaithe,
+      code: mathe,
+      serial: seri,
+      amount: menhgia,
+      request_id,
+      partner_id,
+      sign,
+      command: "charging"
+    });
+
+    if (response.data.status === 1) {
+      res.send("✅ Gửi thẻ thành công, vui lòng đợi duyệt...");
+    } else {
+      res.send("❌ Lỗi gửi thẻ: " + response.data.message);
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.send("⚠️ Không thể kết nối đến máy chủ trung gian.");
+  }
+});
+app.post('/callback', (req, res) => {
+  const { status, amount, request_id, message } = req.body;
+
+  if (status === 1) {
+  const requestMapPath = './data/request.json';
+  const usersPath = './data/users.json';
+
+  let requestMap = JSON.parse(fs.readFileSync(requestMapPath, 'utf8'));
+  const username = requestMap[request_id];
+
+  if (!username) return res.send("❌ Không tìm thấy user từ request_id");
+
+  let users = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
+  let userIndex = users.findIndex(u => u.username === username);
+  if (userIndex === -1) return res.send("❌ User không tồn tại.");
+
+  // Cộng xu dựa trên mệnh giá nạp (hoặc *1.1, *1.2 tùy bạn)
+  const xuNhan = parseInt(amount);
+  users[userIndex].balance += xuNhan;
+  fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+
+  // Xoá mapping đã xử lý
+  delete requestMap[request_id];
+  fs.writeFileSync(requestMapPath, JSON.stringify(requestMap, null, 2));
+
+  console.log(`✅ Cộng ${xuNhan} xu cho ${username}`);
+
+
+  } else {
+   console.log(`❌ Thẻ bị từ chối (${amount}đ): ${message}`);
+  }
+
+  res.status(200).send("OK");
+});
+
+
+
 app.post("/buy-account", (req, res) => {
   if (!req.session.user) return res.status(401).json({ success: false, message: "Chưa đăng nhập" });
 
@@ -212,25 +289,19 @@ app.post("/buy-account", (req, res) => {
 
   return res.json({ success: true, newBalance: users[userIndex].balance });
 });
-app.get('/napthe', (req, res) => {
-  const username = req.session.username || 'guest'; // Lấy từ session, hoặc 'guest' nếu chưa đăng nhập
-  res.render('napthe', { username });
-});
+
+
 
 app.get('/history', (req, res) => {
-  const username = req.session.username || 'guest';
-
-  // Dữ liệu mẫu (có thể lấy từ DB trong thực tế)
+  const username = req.session.user?.username || 'guest';
   const lichSuMua = [
     { tenAcc: 'acc_legend1', gia: 500, thoigian: '2025-07-05 14:25' },
     { tenAcc: 'vip_acc_02', gia: 700, thoigian: '2025-07-04 09:55' }
   ];
-
   const lichSuNap = [
     { sotien: 100000, hinhthuc: 'Thẻ cào', thoigian: '2025-07-03 17:20' },
     { sotien: 200000, hinhthuc: 'Momo', thoigian: '2025-07-02 13:45' }
   ];
-
   res.render('history', { username, lichSuMua, lichSuNap });
 });
 
@@ -238,24 +309,19 @@ app.get("/shop", (req, res) => {
   const user = req.session.user || { username: "Khách", robux: 0 };
   res.render("shop", { user });
 });
+
 app.get('/topup', (req, res) => {
-  const username = req.session.username || 'guest'; // Lấy từ session, hoặc 'guest' nếu chưa đăng nhập
+  const username = req.session.user?.username || 'guest';
   res.render('topup', { username });
 });
+
 app.post('/napthe/card', (req, res) => {
   const { loaithe, menhgia, mathe, seri } = req.body;
-
-  // TODO: xử lý lưu vào database hoặc gửi cho admin
-
   console.log(`[NAP THE] ${loaithe} - ${menhgia} - ${mathe} - ${seri}`);
-  
-  res.render('card'); // Hiển thị trang thành công
+  res.render('card');
 });
-
 app.get('/profile', (req, res) => {
-  const username = req.session.username || 'guest';
-
-  // Dữ liệu giả lập — nên thay bằng lấy từ DB
+  const username = req.session.user?.username || 'guest';
   const user = {
     username: username,
     email: 'user@example.com',
@@ -264,7 +330,6 @@ app.get('/profile', (req, res) => {
     napTotal: 300000,
     rank: 'VIP'
   };
-
   res.render('profile', { user });
 });
 
@@ -288,6 +353,29 @@ app.post('/buy', (req, res) => {
   fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
   res.json({ success: true, newBalance: user.balance });
 });
+app.get('/admin', (req, res) => {
+  const user = req.session.user;
+  if (!user || user.username !== 'admin') return res.status(403).send("❌ Bạn không có quyền truy cập.");
+
+  const users = JSON.parse(fs.readFileSync('./data/users.json', 'utf8'));
+  res.render('admin', { user, users });
+});
+app.post('/admin/update', (req, res) => {
+  const { username, xu, robux } = req.body;
+  const user = req.session.user;
+  if (!user || user.username !== 'admin') return res.status(403).send("Không có quyền");
+
+  const users = JSON.parse(fs.readFileSync('./data/users.json', 'utf8'));
+  const index = users.findIndex(u => u.username === username);
+  if (index === -1) return res.send("User không tồn tại");
+
+  if (xu) users[index].balance += parseInt(xu);
+  if (robux) users[index].robux += parseInt(robux);
+
+  fs.writeFileSync('./data/users.json', JSON.stringify(users, null, 2));
+  res.redirect('/admin');
+});
+
 
 // -------------------- CHẠY SERVER --------------------
 const PORT = process.env.PORT || 3000;

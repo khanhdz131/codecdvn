@@ -3,231 +3,147 @@
 <head>
   <meta charset="UTF-8">
   <title>Vòng quay Robux</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
     body {
-      background: url('/images/backgrspin.jpg') no-repeat center center fixed;
-      background-size: cover;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
       color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-top: 40px;
-      min-height: 100vh;
     }
+
     .header {
-      background: crimson;
-      padding: 15px 30px;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      font-size: 20px;
-      font-weight: bold;
-    }
-    .user-info {
-      background: rgba(0,0,0,0.7);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0,0,0,0.3);
       padding: 10px 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      border: 1px solid gold;
     }
+
     .back-btn {
-      margin-bottom: 10px;
-    }
-    .back-btn a {
-      background: rgba(0,0,0,0.7);
-      padding: 8px 16px;
-      border-radius: 8px;
       color: #fff;
       text-decoration: none;
       font-weight: bold;
-      border: 1px solid #ffcc00;
+      background: #ff4c4c;
+      padding: 8px 15px;
+      border-radius: 8px;
+      transition: 0.2s;
     }
-    .wheel-container {
-      position: relative;
-      width: 400px;
-      height: 400px;
+
+    .back-btn:hover {
+      background: #ff1f1f;
     }
-    .wheel {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      border: 8px solid #ffd700;
-      position: relative;
-      transition: transform 5s ease-out;
-      overflow: hidden;
-    }
-    .segment {
-      position: absolute;
-      width: 50%;
-      height: 50%;
-      left: 50%;
-      top: 50%;
-      transform-origin: 0% 0%;
-      background: #f8e473;
-      clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-    }
-    .segment:nth-child(even) { background: #f7c32e; }
-    .segment .label {
-      position: absolute;
-      top: 50%;
-      left: 90%;
-      transform: translate(-50%, -50%) rotate(-90deg);
-      font-weight: bold;
-      font-size: 20px;
-      color: #000;
-      text-shadow: 1px 1px 2px white;
-    }
-    .pointer {
-      position: absolute;
-      top: -25px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0; height: 0;
-      border-left: 20px solid transparent;
-      border-right: 20px solid transparent;
-      border-bottom: 30px solid red;
-      z-index: 2;
-    }
-    .spin-btn {
-      margin-top: 30px;
-      padding: 12px 30px;
-      font-size: 18px;
-      font-weight: bold;
-      color: white;
-      background-color: #e60000;
-      border: none;
+
+    .balance {
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 8px 15px;
       border-radius: 10px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px #000;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .box {
+      background: #1e1e1e;
+      border-radius: 15px;
+      padding: 10px;
+      transition: transform 0.2s;
       cursor: pointer;
-    }
-    .spin-btn:hover { background-color: #ff3333; }
-
-    canvas#fireworks {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 10;
+      box-shadow: 0 0 10px rgba(255,255,255,0.1);
     }
 
-    .popup {
-      position: fixed;
-      top: 30%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #222;
-      padding: 20px 30px;
+    .box:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 15px rgba(0,255,255,0.4);
+    }
+
+    .box img {
+      width: 100%;
       border-radius: 10px;
-      color: #fff;
-      font-size: 20px;
-      border: 2px solid gold;
-      display: none;
-      z-index: 999;
+    }
+
+    .footer {
+      margin-top: 40px;
+      color: #ccc;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
-  <div class="header">🎯 Vòng quay may mắn Robux</div>
-  <div class="back-btn"><a href="/dashboard">← Về trang chủ</a></div>
-  <div class="user-info" id="userInfo">
-    Xin chào, <%= user.username %> | Số dư: <%= user.balance.toLocaleString() %> xu | Robux: <%= user.robux.toLocaleString() %>
-  </div>
 
-  <div class="wheel-container">
-    <div class="pointer"></div>
-    <div class="wheel" id="wheel">
-      <% const rewards = [100, 200, 300, 400, 500, 1000, 150, 50]; const angle = 360 / rewards.length; %>
-      <% rewards.forEach((r, i) => { const rotate = angle * i; %>
-        <div class="segment" style="transform: rotate(<%= rotate %>deg);">
-          <span class="label" style="transform: rotate(<%= -rotate %>deg);"><%= r %></span>
-        </div>
-      <% }) %>
+  <div class="header">
+    <a href="/dashboard" class="back-btn">← Trang chủ</a>
+    <div class="balance">
+      💰 <strong>số dư:</strong> <%= user.balance %> | 💎 <strong>Robux:</strong> <%= user.robux %>
     </div>
   </div>
 
-  <button class="spin-btn" onclick="spin()">🎲 Quay Ngay</button>
-  <canvas id="fireworks"></canvas>
-  <div class="popup" id="popup"></div>
+  <div class="container">
+    <h1>VÒNG QUAY NHẬN ROBUX</h1>
+
+    <div class="grid">
+      <% for (let i = 0; i < 15; i++) { %>
+        <div class="box" onclick="spinBox(<%= i %>)">
+          <img src="/images/gift.jpg" alt="Hộp quà">
+        </div>
+      <% } %>
+    </div>
+
+    <div class="footer">Mỗi lượt quay tốn <strong>20.000 Xu</strong>. Chúc bạn may mắn!</div>
+  </div>
 
   <script>
-    const rewards = [100, 200, 300, 400, 500, 1000, 150, 50];
-    const wheel = document.getElementById("wheel");
-    const popup = document.getElementById("popup");
-    let spinning = false;
-
-    function spin() {
-      if (spinning) return;
-      spinning = true;
-
-      const cost = 20000;
-      const index = Math.floor(Math.random() * rewards.length);
-      const reward = rewards[index];
-      const anglePer = 360 / rewards.length;
-      const rotateTo = (360 * 5) + (index * anglePer) + (anglePer / 2);
-
-      wheel.style.transform = `rotate(${rotateTo}deg)`;
-
-      setTimeout(() => {
-        fireworks();
-        showPopup(reward);
-        fetch('/spin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ reward, cost })
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            document.getElementById("userInfo").innerText =
-              `Xin chào, ${data.username} | Số dư: ${data.newBalance.toLocaleString()} xu | Robux: ${data.newRobux.toLocaleString()}`;
-          } else {
-            alert(data.message);
-          }
-        });
-        spinning = false;
-      }, 5200);
-    }
-
-    function showPopup(amount) {
-      popup.innerText = `🎉 Bạn nhận được ${amount} Robux!`;
-      popup.style.display = 'block';
-      setTimeout(() => popup.style.display = 'none', 3000);
-    }
-
-    const canvas = document.getElementById("fireworks");
-    const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    let particles = [];
-
-    function fireworks() {
-      for (let i = 0; i < 100; i++) {
-        particles.push({
-          x: canvas.width / 2,
-          y: canvas.height / 2,
-          speed: Math.random() * 5 + 2,
-          angle: Math.random() * 2 * Math.PI,
-          radius: Math.random() * 3 + 2,
-          life: 100
-        });
-      }
-    }
-
-    function drawFireworks() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((p, i) => {
-        p.x += Math.cos(p.angle) * p.speed;
-        p.y += Math.sin(p.angle) * p.speed;
-        p.life--;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI);
-        ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 50%)`;
-        ctx.fill();
-        if (p.life <= 0) particles.splice(i, 1);
+    async function spinBox(index) {
+      const confirm = await Swal.fire({
+        title: 'Bạn chắc chắn quay hộp này?',
+        text: 'Sẽ trừ 20.000 Xu từ tài khoản của bạn!',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Quay ngay!',
+        cancelButtonText: 'Hủy'
       });
-      requestAnimationFrame(drawFireworks);
+
+      if (!confirm.isConfirmed) return;
+
+      const res = await fetch('/spin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ index })
+      });
+
+      const data = await res.json();
+
+      if (data.error) {
+        return Swal.fire('Lỗi!', data.error, 'error');
+      }
+
+      await Swal.fire({
+        title: '🎉 Bạn nhận được!',
+        text: `${data.reward} Robux`,
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+
+      location.reload();
     }
-    drawFireworks();
   </script>
 </body>
 </html>

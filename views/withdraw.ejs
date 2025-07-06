@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Rút Robux</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .withdraw-box {
+      background: rgba(0, 0, 0, 0.75);
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      width: 420px;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    select, input[type="text"] {
+      width: 85%;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 8px;
+      border: none;
+      font-size: 15px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 30px;
+      border: none;
+      border-radius: 8px;
+      background-color: #00cc88;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #00b377;
+    }
+
+    .info {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="withdraw-box">
+    <h2>RÚT ROBUX</h2>
+    <p>Bạn hiện có <strong><%= user.robux %> Robux</strong>.</p>
+
+    <form action="/withdraw" method="POST">
+      <input type="text" name="robloxId" placeholder="Nhập ID Roblox người nhận" required>
+
+      <select name="amount" required>
+        <option value="">-- Chọn số Robux muốn rút --</option>
+        <option value="200">200 Robux</option>
+         <option value="300">300 Robux</option>
+          <option value="400">400 Robux</option>
+        <option value="500">500 Robux</option>
+        <option value="1000">1000 Robux</option>
+        <option value="2000">2000 Robux</option>
+        <option value="5000">5000 Robux</option>
+        <option value="1300">1300 Robux</option>
+      </select>
+
+      <br>
+      <button type="submit">Rút ngay</button>
+    </form>
+
+    <% if (message) { %>
+      <p class="info"><%= message %></p>
+    <% } %>
+  </div>
+</body>
+</html>

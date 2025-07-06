@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Quản lý người dùng</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to right, #141e30, #243b55);
+      color: white;
+      padding: 40px;
+    }
+    .table-dark td, .table-dark th {
+      vertical-align: middle;
+    }
+    input[type="number"] {
+      width: 100px;
+      border-radius: 4px;
+      padding: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-weight: bold;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2 class="display-5">👑 BẢNG QUẢN TRỊ ADMIN</h2>
+      <p>Quản lý tài khoản người dùng, cộng/trừ Xu và Robux</p>
+    </div>
+
+    <table class="table table-dark table-striped table-bordered text-center">
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Username</th>
+          <th>Xu</th>
+          <th>Robux</th>
+          <th>Cộng Xu</th>
+          <th>Cộng Robux</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach((u, i) => { %>
+          <tr>
+            <td><%= i + 1 %></td>
+            <td><%= u.username %></td>
+            <td><%= u.balance %></td>
+            <td><%= u.robux %></td>
+            <form action="/admin/update" method="POST" class="d-flex">
+              <td>
+                <input type="hidden" name="username" value="<%= u.username %>">
+                <input type="number" name="xu" placeholder="+/- Xu">
+              </td>
+              <td>
+                <input type="number" name="robux" placeholder="+/- Robux">
+              </td>
+              <td>
+                <button class="btn btn-success" type="submit">Cập nhật</button>
+              </td>
+            </form>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

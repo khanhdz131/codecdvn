@@ -2,12 +2,19 @@
   {
     "username": "1",
     "password": "1",
-    "balance": 1000000000000000006,
-    "robux": 380
+    "balance": 0,
+    "robux": 86305
+  
   },
   {
     "username": "2",
     "password": "2",
+    "balance": 2000,
+    "robux": 0
+  },
+  {
+    "username": "3",
+    "password": "3",
     "balance": 2000,
     "robux": 0
   }
