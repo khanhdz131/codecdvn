@@ -190,8 +190,8 @@ if (fs.existsSync(requestMapPath)) {
 mapData[request_id] = username;
 fs.writeFileSync(requestMapPath, JSON.stringify(mapData, null, 2));
 
-  const partner_id = "YOUR_PARTNER_ID";
-  const partner_key = "YOUR_PARTNER_KEY";
+  const partner_id = "17305102095";
+  const partner_key = "637e2af464f3b59d6928828b665b4b67";
 
   const crypto = require("crypto");
   const sign = crypto
@@ -200,7 +200,7 @@ fs.writeFileSync(requestMapPath, JSON.stringify(mapData, null, 2));
     .digest("hex");
 
   try {
-    const response = await axios.post("https://trumthe.vn/chargingws/v2", {
+    const response = await axios.post("https://thesieure.com/chargingws/v2", {
       telco: loaithe,
       code: mathe,
       serial: seri,
@@ -208,7 +208,8 @@ fs.writeFileSync(requestMapPath, JSON.stringify(mapData, null, 2));
       request_id,
       partner_id,
       sign,
-      command: "charging"
+      command: "charging",
+      callback_url: "https://your-app-name.onrender.com/callback"
     });
 
     if (response.data.status === 1) {
