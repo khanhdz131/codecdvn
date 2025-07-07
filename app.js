@@ -209,7 +209,7 @@ fs.writeFileSync(requestMapPath, JSON.stringify(mapData, null, 2));
       partner_id,
       sign,
       command: "charging",
-      callback_url: "https://your-app-name.onrender.com/callback"
+      callback_url: "https://codecdvnrb.onrende.com/callback"
 
     });
 
