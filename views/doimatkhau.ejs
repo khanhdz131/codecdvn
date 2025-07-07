@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Đổi mật khẩu</title>
+  <link rel="stylesheet" href="/public/style.css"> <!-- nếu có -->
+</head>
+<body>
+  <h2>🔒 Đổi mật khẩu</h2>
+  <form action="/doimatkhau" method="POST">
+    <label>Tài khoản:</label><br>
+    <input type="text" name="username" required><br>
+
+    <label>Mật khẩu cũ:</label><br>
+    <input type="password" name="oldPassword" required><br>
+
+    <label>Mật khẩu mới:</label><br>
+    <input type="password" name="newPassword" required><br><br>
+
+    <button type="submit">Đổi mật khẩu</button>
+  </form>
+</body>
+</html>

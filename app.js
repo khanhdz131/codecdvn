@@ -209,7 +209,8 @@ fs.writeFileSync(requestMapPath, JSON.stringify(mapData, null, 2));
       partner_id,
       sign,
       command: "charging",
-      callback_url: "https://codecdvnrb.onrender.com/callback"
+      callback_url: "https://your-app-name.onrender.com/callback"
+
     });
 
     if (response.data.status === 1) {
@@ -375,6 +376,28 @@ app.post('/admin/update', (req, res) => {
 
   fs.writeFileSync('./data/users.json', JSON.stringify(users, null, 2));
   res.redirect('/admin');
+});
+app.get('/doimatkhau', (req, res) => {
+  res.render('doimatkhau'); // render trang form
+});
+
+app.post('/doimatkhau', (req, res) => {
+  const { username, oldPassword, newPassword } = req.body;
+
+  const fs = require('fs');
+  const usersPath = './data/users.json';
+
+  let users = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
+  let userIndex = users.findIndex(u => u.username === username && u.password === oldPassword);
+
+  if (userIndex === -1) {
+    return res.send("❌ Sai tài khoản hoặc mật khẩu cũ.");
+  }
+
+  users[userIndex].password = newPassword;
+  fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+
+  res.send("✅ Đổi mật khẩu thành công!");
 });
 
 
