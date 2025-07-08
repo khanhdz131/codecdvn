@@ -224,14 +224,7 @@ fs.writeFileSync(requestMapPath, JSON.stringify(mapData, null, 2));
     res.send("⚠️ Không thể kết nối đến máy chủ trung gian.");
   }
 });
-const express = require("express");
-const session = require("express-session");
-const bodyParser = require("body-parser");
-const fs = require("fs");
-const path = require("path");
 
-const app = express();
-const PORT = process.env.PORT || 10000;
 
 // Cấu hình view và static
 app.use(express.static(path.join(__dirname, "public")));
