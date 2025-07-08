@@ -209,12 +209,10 @@ fs.writeFileSync(requestMapPath, JSON.stringify(mapData, null, 2));
       partner_id,
       sign,
       command: "charging",
-<<<<<<< HEAD
-      callback_url: "https://codecdvnrb.onrende.com/callback"
-=======
+ 
+     
       callback_url: "https://codecdvnrb.onrender.com/callback"
->>>>>>> 0165284 (admin và users.json)
-
+      
     });
 
     if (response.data.status === 1) {
@@ -363,28 +361,7 @@ app.post('/buy', (req, res) => {
   fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
   res.json({ success: true, newBalance: user.balance });
 });
-app.get('/admin', (req, res) => {
-  const user = req.session.user;
-  if (!user || user.username !== 'admin') return res.status(403).send("❌ Bạn không có quyền truy cập.");
 
-  const users = JSON.parse(fs.readFileSync('./data/users.json', 'utf8'));
-  res.render('admin', { user, users });
-});
-app.post('/admin/update', (req, res) => {
-  const { username, xu, robux } = req.body;
-  const user = req.session.user;
-  if (!user || user.username !== 'admin') return res.status(403).send("Không có quyền");
-
-  const users = JSON.parse(fs.readFileSync('./data/users.json', 'utf8'));
-  const index = users.findIndex(u => u.username === username);
-  if (index === -1) return res.send("User không tồn tại");
-
-  if (xu) users[index].balance += parseInt(xu);
-  if (robux) users[index].robux += parseInt(robux);
-
-  fs.writeFileSync('./data/users.json', JSON.stringify(users, null, 2));
-  res.redirect('/admin');
-});
 app.get('/doimatkhau', (req, res) => {
   res.render('doimatkhau'); // render trang form
 });
@@ -424,12 +401,21 @@ app.get("/lichsunap", (req, res) => {
 
   // Nếu muốn lọc theo user đang đăng nhập:
   // const user = req.session.user?.username;
-  // nap = nap.filter(n => n.username === user);
+  // nap  nap.filter(n => n.username  user);
 
   res.render("lichsunap", { nap });
 });
+// Route hiển thị trang admin
 app.get('/admin', (req, res) => {
-  const user = req.session.user;app.post('/admin/update', (req, res) => {
+  const user = req.session.user;
+  if (!user || user.username !== 'admin') return res.status(403).send("❌ Bạn không có quyền truy cập.");
+
+  const users = JSON.parse(fs.readFileSync('./data/users.json', 'utf8'));
+  res.render('admin', { user, users });
+});
+
+// Route cộng xu / robux
+app.post('/admin/update', (req, res) => {
   const { username, xu, robux } = req.body;
   const user = req.session.user;
   if (!user || user.username !== 'admin') return res.status(403).send("❌ Không có quyền");
@@ -444,6 +430,8 @@ app.get('/admin', (req, res) => {
   fs.writeFileSync('./data/users.json', JSON.stringify(users, null, 2));
   res.redirect('/admin');
 });
+
+// Route xoá user
 app.post('/admin/delete', (req, res) => {
   const { username } = req.body;
   const user = req.session.user;
@@ -455,11 +443,6 @@ app.post('/admin/delete', (req, res) => {
   res.redirect('/admin');
 });
 
-  if (!user || user.username !== 'admin') return res.status(403).send("❌ Bạn không có quyền truy cập.");
-
-  const users = JSON.parse(fs.readFileSync('./data/users.json', 'utf8'));
-  res.render('admin', { user, users });
-});
 
 // -------------------- CHẠY SERVER --------------------
 const PORT = process.env.PORT || 3000;

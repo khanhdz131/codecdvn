@@ -2,8 +2,8 @@
   {
     "username": "1",
     "password": "1",
-    "balance": 0,
-    "robux": 86305
+    "balance": 580000,
+    "robux": 88345
   },
   {
     "username": "2",
@@ -24,10 +24,9 @@
     "robux": 0
   },
   {
-  "username": "admin",
-  "password": "khanh000",
-  "balance": 10000000,
-  "robux": 99999999999
-}
-
+    "username": "admin",
+    "password": "khanh000",
+    "balance": 10000000,
+    "robux": 99999999999
+  }
 ]
