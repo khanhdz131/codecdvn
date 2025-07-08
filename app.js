@@ -229,36 +229,33 @@ app.post('/callback', (req, res) => {
   const { status, amount, request_id, message } = req.body;
 
   if (status === 1) {
-  const requestMapPath = './data/request.json';
-  const usersPath = './data/users.json';
+    const requestMapPath = './data/request.json';
+    const usersPath = './data/users.json';
 
-  let requestMap = JSON.parse(fs.readFileSync(requestMapPath, 'utf8'));
-  const username = requestMap[request_id];
+    let requestMap = JSON.parse(fs.readFileSync(requestMapPath, 'utf8'));
+    const username = requestMap[request_id];
 
-  if (!username) return res.send("❌ Không tìm thấy user từ request_id");
+    if (!username) return res.send("❌ Không tìm thấy user từ request_id");
 
-  let users = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
-  let userIndex = users.findIndex(u => u.username === username);
-  if (userIndex === -1) return res.send("❌ User không tồn tại.");
+    let users = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
+    let userIndex = users.findIndex(u => u.username === username);
+    if (userIndex === -1) return res.send("❌ User không tồn tại.");
 
-  // Cộng xu dựa trên mệnh giá nạp (hoặc *1.1, *1.2 tùy bạn)
-  const xuNhan = parseInt(amount);
-  users[userIndex].balance += xuNhan;
-  fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+    const xuNhan = parseInt(amount);
+    users[userIndex].balance += xuNhan;
+    fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
 
-  // Xoá mapping đã xử lý
-  delete requestMap[request_id];
-  fs.writeFileSync(requestMapPath, JSON.stringify(requestMap, null, 2));
+    delete requestMap[request_id];
+    fs.writeFileSync(requestMapPath, JSON.stringify(requestMap, null, 2));
 
-  console.log(`✅ Cộng ${xuNhan} xu cho ${username}`);
-
-
+    console.log(`✅ Cộng ${xuNhan} xu cho ${username}`);
   } else {
-   console.log(`❌ Thẻ bị từ chối (${amount}đ): ${message}`);
+    console.log(`❌ Thẻ bị từ chối (${amount}đ): ${message}`);
   }
 
   res.status(200).send("OK");
 });
+
 
 
 
