@@ -2,85 +2,40 @@ const express = require("express");
 const session = require("express-session");
 const bodyParser = require("body-parser");
 const path = require("path");
-const fs = require("fs");
-const crypto = require("crypto");
-const axios = require("axios");
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
+// Setup view engine & static files
 app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use(session({
-  secret: "secret-key",
-  resave: false,
-  saveUninitialized: true
-}));
+app.use(
+  session({
+    secret: "secret-key",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
-// TEST CALLBACK API
-app.post('/callback', (req, res) => {
-  const { status, amount, request_id, message } = req.body;
-  console.log("Callback Received:", req.body);
+// Home page
+app.get("/", (req, res) => {
+  res.send("✅ Website đang chạy trên Koyeb thành công!");
+});
 
-  if (status === 1) {
-    const requestMapPath = './data/request.json';
-    const usersPath = './data/users.json';
-
-    let requestMap = JSON.parse(fs.readFileSync(requestMapPath, 'utf8'));
-    const username = requestMap[request_id];
-
-    if (!username) return res.send("❌ Không tìm thấy user từ request_id");
-
-    let users = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
-    let userIndex = users.findIndex(u => u.username === username);
-    if (userIndex === -1) return res.send("❌ User không tồn tại.");
-
-    const xuNhan = parseInt(amount);
-    users[userIndex].balance += xuNhan;
-    fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
-
-    delete requestMap[request_id];
-    fs.writeFileSync(requestMapPath, JSON.stringify(requestMap, null, 2));
-
-    console.log(`✅ Cộng ${xuNhan} xu cho ${username}`);
-  } else {
-    console.log(`❌ Thẻ bị từ chối (${amount}đ): ${message}`);
-  }
-
+// Route test callback (giả lập cho T3)
+app.post("/callback", (req, res) => {
+  console.log("📩 Callback nhận được:", req.body);
   res.status(200).send("OK");
 });
 
-
-// -------------------- ĐĂNG KÝ --------------------
-app.get("/register", (req, res) => res.render("register"));
-
-app.post("/register", (req, res) => {
-  const { username, password, confirmPassword } = req.body;
-  const filePath = "./data/users.json";
-
-  if (!username || !password || !confirmPassword) {
-    return res.send("❌ Vui lòng nhập đầy đủ thông tin.");
-  }
-
-  if (password !== confirmPassword) {
-    return res.send("❌ Mật khẩu không khớp.");
-  }
-
-  if (!fs.existsSync(filePath)) fs.writeFileSync(filePath, "[]");
-
-  let users = JSON.parse(fs.readFileSync(filePath, "utf8"));
-  if (users.find(u => u.username === username)) {
-    return res.send("⚠️ Tài khoản đã tồn tại.");
-  }
-
-  const newUser = { username, password, balance: 2000, robux: 0 };
-  users.push(newUser);
-  fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
-
-  res.redirect("/login");
+// Start server
+app.listen(PORT, () => {
+  console.log(`✅ Server đang chạy tại http://localhost:${PORT}`);
 });
 
 // -------------------- ĐĂNG NHẬP --------------------
