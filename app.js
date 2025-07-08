@@ -225,7 +225,41 @@ fs.writeFileSync(requestMapPath, JSON.stringify(mapData, null, 2));
     res.send("⚠️ Không thể kết nối đến máy chủ trung gian.");
   }
 });
-app.post('/callback', (req, res) => {
+const express = require("express");
+const session = require("express-session");
+const bodyParser = require("body-parser");
+const fs = require("fs");
+const path = require("path");
+
+const app = express();
+const PORT = process.env.PORT || 10000;
+
+// Cấu hình view và static
+app.use(express.static(path.join(__dirname, "public")));
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+
+// Middleware đọc dữ liệu form và JSON
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+// Cấu hình session
+app.use(
+  session({
+    secret: "secret-key",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
+// Middleware yêu cầu đăng nhập
+function requireLogin(req, res, next) {
+  if (!req.session.user) return res.redirect("/login");
+  next();
+}
+
+// ========== ROUTE CALLBACK NẠP TỪ T3 ==========
+app.post("/callback", (req, res) => {
   const { status, amount, request_id, message } = req.body;
 
   if (status === 1) {
@@ -255,8 +289,6 @@ app.post('/callback', (req, res) => {
 
   res.status(200).send("OK");
 });
-
-
 
 
 app.post("/buy-account", (req, res) => {
