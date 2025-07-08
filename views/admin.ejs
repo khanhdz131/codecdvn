@@ -2,76 +2,88 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Admin - Quản lý người dùng</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Trang quản trị</title>
+  <link rel="stylesheet" href="/public/style.css">
   <style>
     body {
-      background: linear-gradient(to right, #141e30, #243b55);
+      background: #1e1e2f;
       color: white;
-      padding: 40px;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 30px;
     }
-    .table-dark td, .table-dark th {
-      vertical-align: middle;
+    h2 {
+      text-align: center;
+      color: #ffcc00;
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(255,255,255,0.05);
+    }
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #555;
     }
     input[type="number"] {
-      width: 100px;
-      border-radius: 4px;
-      padding: 5px;
-      border: 1px solid #ccc;
+      width: 80px;
+      padding: 4px;
     }
-    button {
-      border-radius: 6px;
-      padding: 6px 14px;
-      font-weight: bold;
+    form {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
     }
-    .header {
-      text-align: center;
-      margin-bottom: 30px;
+    .btn {
+      padding: 5px 10px;
+      border: none;
+      background: #ffaa00;
+      color: #000;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #ffcc00;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h2 class="display-5">👑 BẢNG QUẢN TRỊ ADMIN</h2>
-      <p>Quản lý tài khoản người dùng, cộng/trừ Xu và Robux</p>
-    </div>
+  <h2>👑 Quản trị viên: <%= user.username %></h2>
 
-    <table class="table table-dark table-striped table-bordered text-center">
-      <thead>
+  <table>
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Xu</th>
+        <th>Robux</th>
+        <th>Cộng Xu / Robux</th>
+        <th>Xóa</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach(u => { %>
         <tr>
-          <th>STT</th>
-          <th>Username</th>
-          <th>Xu</th>
-          <th>Robux</th>
-          <th>Cộng Xu</th>
-          <th>Cộng Robux</th>
-          <th>Thao tác</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% users.forEach((u, i) => { %>
-          <tr>
-            <td><%= i + 1 %></td>
-            <td><%= u.username %></td>
-            <td><%= u.balance %></td>
-            <td><%= u.robux %></td>
-            <form action="/admin/update" method="POST" class="d-flex">
-              <td>
-                <input type="hidden" name="username" value="<%= u.username %>">
-                <input type="number" name="xu" placeholder="+/- Xu">
-              </td>
-              <td>
-                <input type="number" name="robux" placeholder="+/- Robux">
-              </td>
-              <td>
-                <button class="btn btn-success" type="submit">Cập nhật</button>
-              </td>
+          <td><%= u.username %></td>
+          <td><%= u.balance %></td>
+          <td><%= u.robux %></td>
+          <td>
+            <form action="/admin/update" method="POST">
+              <input type="hidden" name="username" value="<%= u.username %>">
+              <input type="number" name="xu" placeholder="Xu">
+              <input type="number" name="robux" placeholder="Robux">
+              <button class="btn" type="submit">✅ Cộng</button>
             </form>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  </div>
+          </td>
+          <td>
+            <form action="/admin/delete" method="POST" onsubmit="return confirm('Xác nhận xoá user <%= u.username %>?')">
+              <input type="hidden" name="username" value="<%= u.username %>">
+              <button class="btn" style="background: #ff5555;" type="submit">🗑️ Xoá</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
 </body>
 </html>

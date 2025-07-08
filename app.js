@@ -209,7 +209,11 @@ fs.writeFileSync(requestMapPath, JSON.stringify(mapData, null, 2));
       partner_id,
       sign,
       command: "charging",
+<<<<<<< HEAD
       callback_url: "https://codecdvnrb.onrende.com/callback"
+=======
+      callback_url: "https://codecdvnrb.onrender.com/callback"
+>>>>>>> 0165284 (admin và users.json)
 
     });
 
@@ -294,18 +298,22 @@ app.post("/buy-account", (req, res) => {
 
 
 
-app.get('/history', (req, res) => {
-  const username = req.session.user?.username || 'guest';
-  const lichSuMua = [
-    { tenAcc: 'acc_legend1', gia: 500, thoigian: '2025-07-05 14:25' },
-    { tenAcc: 'vip_acc_02', gia: 700, thoigian: '2025-07-04 09:55' }
-  ];
-  const lichSuNap = [
-    { sotien: 100000, hinhthuc: 'Thẻ cào', thoigian: '2025-07-03 17:20' },
-    { sotien: 200000, hinhthuc: 'Momo', thoigian: '2025-07-02 13:45' }
-  ];
-  res.render('history', { username, lichSuMua, lichSuNap });
+app.get("/history", (req, res) => {
+  const fs = require("fs");
+  const lichSuPath = "./data/lichsumua.json";
+  let history = [];
+
+  if (fs.existsSync(lichSuPath)) {
+    history = JSON.parse(fs.readFileSync(lichSuPath, "utf8"));
+  }
+
+  // Lọc theo user nếu cần:
+  // const user = req.session.user?.username;
+  // history = history.filter(h => h.username === user);
+
+  res.render("history", { history });
 });
+
 
 app.get("/shop", (req, res) => {
   const user = req.session.user || { username: "Khách", robux: 0 };
@@ -382,24 +390,76 @@ app.get('/doimatkhau', (req, res) => {
 });
 
 app.post('/doimatkhau', (req, res) => {
-  const { username, oldPassword, newPassword } = req.body;
+  const username = req.session.user?.username; // lấy user từ session
+  const { oldPassword, newPassword } = req.body;
 
-  const fs = require('fs');
+  if (!username) return res.send("❌ Bạn chưa đăng nhập.");
+
   const usersPath = './data/users.json';
-
   let users = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
   let userIndex = users.findIndex(u => u.username === username && u.password === oldPassword);
 
   if (userIndex === -1) {
-    return res.send("❌ Sai tài khoản hoặc mật khẩu cũ.");
+    return res.send("❌ Mật khẩu cũ không đúng.");
   }
 
   users[userIndex].password = newPassword;
   fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
 
+  // Cập nhật lại session
+  req.session.user.password = newPassword;
+
   res.send("✅ Đổi mật khẩu thành công!");
 });
 
+
+app.get("/lichsunap", (req, res) => {
+  const fs = require("fs");
+  const path = "./data/lichsunap.json";
+  let nap = [];
+
+  if (fs.existsSync(path)) {
+    nap = JSON.parse(fs.readFileSync(path, "utf8"));
+  }
+
+  // Nếu muốn lọc theo user đang đăng nhập:
+  // const user = req.session.user?.username;
+  // nap = nap.filter(n => n.username === user);
+
+  res.render("lichsunap", { nap });
+});
+app.get('/admin', (req, res) => {
+  const user = req.session.user;app.post('/admin/update', (req, res) => {
+  const { username, xu, robux } = req.body;
+  const user = req.session.user;
+  if (!user || user.username !== 'admin') return res.status(403).send("❌ Không có quyền");
+
+  const users = JSON.parse(fs.readFileSync('./data/users.json', 'utf8'));
+  const index = users.findIndex(u => u.username === username);
+  if (index === -1) return res.send("❌ User không tồn tại");
+
+  if (xu) users[index].balance += parseInt(xu);
+  if (robux) users[index].robux += parseInt(robux);
+
+  fs.writeFileSync('./data/users.json', JSON.stringify(users, null, 2));
+  res.redirect('/admin');
+});
+app.post('/admin/delete', (req, res) => {
+  const { username } = req.body;
+  const user = req.session.user;
+  if (!user || user.username !== 'admin') return res.status(403).send("❌ Không có quyền");
+
+  let users = JSON.parse(fs.readFileSync('./data/users.json', 'utf8'));
+  users = users.filter(u => u.username !== username);
+  fs.writeFileSync('./data/users.json', JSON.stringify(users, null, 2));
+  res.redirect('/admin');
+});
+
+  if (!user || user.username !== 'admin') return res.status(403).send("❌ Bạn không có quyền truy cập.");
+
+  const users = JSON.parse(fs.readFileSync('./data/users.json', 'utf8'));
+  res.render('admin', { user, users });
+});
 
 // -------------------- CHẠY SERVER --------------------
 const PORT = process.env.PORT || 3000;

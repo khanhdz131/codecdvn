@@ -4,7 +4,6 @@
     "password": "1",
     "balance": 0,
     "robux": 86305
-  
   },
   {
     "username": "2",
@@ -17,5 +16,18 @@
     "password": "3",
     "balance": 2000,
     "robux": 0
-  }
+  },
+  {
+    "username": "w",
+    "password": "w",
+    "balance": 2000,
+    "robux": 0
+  },
+  {
+  "username": "admin",
+  "password": "khanh000",
+  "balance": 10000000,
+  "robux": 99999999999
+}
+
 ]

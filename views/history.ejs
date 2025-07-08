@@ -2,110 +2,94 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Lịch Sử Giao Dịch - Roblox Shop VIP</title>
+  <title>Lịch sử mua tài khoản</title>
+  <link rel="stylesheet" href="/style.css">
   <style>
     body {
-      background: linear-gradient(to right, #1e1e2f, #3a3a5d);
+      background-color: #121212;
+      color: #fff;
       font-family: 'Segoe UI', sans-serif;
-      color: white;
       margin: 0;
-      padding: 20px;
+      padding: 0;
     }
-
     .container {
       max-width: 1000px;
-      margin: auto;
-      background-color: rgba(255,255,255,0.05);
+      margin: 50px auto;
       padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      background: #1e1e1e;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,255,255,0.1);
     }
-
-    h2 {
+    h1 {
       text-align: center;
-      color: #ffc107;
+      color: #00ffff;
       margin-bottom: 30px;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 40px;
+      margin-top: 15px;
     }
-
     th, td {
-      border: 1px solid rgba(255,255,255,0.2);
+      border: 1px solid #333;
       padding: 12px;
       text-align: center;
     }
-
     th {
-      background-color: #ffc107;
-      color: black;
+      background-color: #00bfff;
+      color: white;
     }
-
     tr:nth-child(even) {
-      background-color: rgba(255,255,255,0.05);
+      background-color: #2c2c2c;
     }
-
-    .username-box {
+    tr:hover {
+      background-color: #3a3a3a;
+    }
+    .back {
+      display: block;
+      margin-top: 20px;
       text-align: center;
-      margin-bottom: 20px;
-      font-size: 18px;
+    }
+    .back a {
+      color: #0ff;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
+
   <div class="container">
-    <div class="username-box">
-      Xin chào: <strong><%= username %></strong>
+    <h1>📜 LỊCH SỬ MUA TÀI KHOẢN</h1>
+
+    <% if (history.length === 0) { %>
+      <p style="text-align: center;">Bạn chưa mua tài khoản nào.</p>
+    <% } else { %>
+      <table>
+        <thead>
+          <tr>
+            <th>Tài khoản</th>
+            <th>Mật khẩu</th>
+            <th>Giá</th>
+            <th>Thời gian</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% history.forEach(item => { %>
+            <tr>
+              <td><%= item.taikhoan %></td>
+              <td><%= item.matkhau %></td>
+              <td><%= item.gia %> xu</td>
+              <td><%= item.thoigian %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+
+    <div class="back">
+      <a href="/dashboard">⬅ Quay lại trang chủ</a>
     </div>
-
-    <h2>LỊCH SỬ MUA ACC</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Tên ACC</th>
-          <th>Giá Robux</th>
-          <th>Thời gian</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% if (lichSuMua.length === 0) { %>
-          <tr><td colspan="3">Không có giao dịch mua acc nào.</td></tr>
-        <% } %>
-        <% lichSuMua.forEach(item => { %>
-          <tr>
-            <td><%= item.tenAcc %></td>
-            <td><%= item.gia %> R$</td>
-            <td><%= item.thoigian %></td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-
-    <h2>LỊCH SỬ NẠP TIỀN</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Số tiền</th>
-          <th>Hình thức</th>
-          <th>Thời gian</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% if (lichSuNap.length === 0) { %>
-          <tr><td colspan="3">Chưa có giao dịch nạp tiền nào.</td></tr>
-        <% } %>
-        <% lichSuNap.forEach(item => { %>
-          <tr>
-            <td><%= item.sotien %> VNĐ</td>
-            <td><%= item.hinhthuc %></td>
-            <td><%= item.thoigian %></td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
   </div>
+
 </body>
 </html>
