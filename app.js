@@ -1,40 +1,29 @@
 const express = require("express");
 const session = require("express-session");
 const bodyParser = require("body-parser");
-const fs = require("fs");
 const path = require("path");
+const fs = require("fs");
+const crypto = require("crypto");
+const axios = require("axios");
 
 const app = express();
 
-// Setup static folder and views
 app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-
-// Body parser
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// Session
-app.use(
-  session({
-    secret: "secret-key",
-    resave: false,
-    saveUninitialized: true,
-  })
-);
+app.use(session({
+  secret: "secret-key",
+  resave: false,
+  saveUninitialized: true
+}));
 
-// Middleware check login
-function requireLogin(req, res, next) {
-  if (!req.session.user) return res.redirect("/login");
-  next();
-}
-
-// ✅ CALLBACK từ T3
-app.post("/callback", (req, res) => {
+// TEST CALLBACK API
+app.post('/callback', (req, res) => {
   const { status, amount, request_id, message } = req.body;
-
-  console.log("📩 Callback received");
+  console.log("Callback Received:", req.body);
 
   if (status === 1) {
     const requestMapPath = './data/request.json';
@@ -58,11 +47,12 @@ app.post("/callback", (req, res) => {
 
     console.log(`✅ Cộng ${xuNhan} xu cho ${username}`);
   } else {
-    console.log(`❌ Từ chối nạp (${amount}đ): ${message}`);
+    console.log(`❌ Thẻ bị từ chối (${amount}đ): ${message}`);
   }
 
   res.status(200).send("OK");
 });
+
 
 // -------------------- ĐĂNG KÝ --------------------
 app.get("/register", (req, res) => res.render("register"));
