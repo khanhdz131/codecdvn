@@ -10,7 +10,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.json());
+app.use(bodyParser.json());
 
 app.use(session({
   secret: "secret-key",
@@ -442,6 +442,8 @@ app.post('/admin/delete', (req, res) => {
   fs.writeFileSync('./data/users.json', JSON.stringify(users, null, 2));
   res.redirect('/admin');
 });
+const allowedIP = '1.2.3.4'; // IP của T3
+if (req.ip !== allowedIP) return res.status(403).send("Forbidden");
 
 
 // -------------------- CHẠY SERVER --------------------
