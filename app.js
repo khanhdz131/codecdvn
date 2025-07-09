@@ -38,7 +38,7 @@ app.post("/callback", (req, res) => {
   console.log("📩 Callback nhận được:", req.body);
   res.status(200).send("OK");
 });
-=======
+
 // TEST CALLBACK API
 app.post('/callback', (req, res) => {
   const { status, amount, request_id, message } = req.body;
@@ -72,7 +72,7 @@ app.post('/callback', (req, res) => {
   res.status(200).send("OK");
 });
 
->>>>>>> 26d76ba (Remove node_modules and update .gitignore)
+ 26d76ba (Remove node_modules and update .gitignore)
 
 });
 
