@@ -10,7 +10,7 @@ const axios = require("axios");
 >>>>>>> 26d76ba (Remove node_modules and update .gitignore)
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+
 
 // Setup view engine & static files
 app.use(express.static(path.join(__dirname, "public")));
