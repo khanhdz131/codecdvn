@@ -18,3 +18,5 @@ EXPOSE 3000
 
 # Chạy app
 CMD ["node", "app.js"]
+
+
