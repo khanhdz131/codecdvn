@@ -75,9 +75,6 @@ app.post('/callback', (req, res) => {
 
 >>>>>>> 26d76ba (Remove node_modules and update .gitignore)
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`✅ Server đang chạy tại http://localhost:${PORT}`);
 });
 
 // -------------------- ĐĂNG NHẬP --------------------
