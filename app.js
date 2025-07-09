@@ -2,7 +2,7 @@ const express = require("express");
 const session = require("express-session");
 const bodyParser = require("body-parser");
 const path = require("path");
-<<<<<<< HEAD
+
 =======
 const fs = require("fs");
 const crypto = require("crypto");
@@ -28,7 +28,6 @@ app.use(
   })
 );
 
-<<<<<<< HEAD
 // Home page
 app.get("/", (req, res) => {
   res.send("✅ Website đang chạy trên Koyeb thành công!");
