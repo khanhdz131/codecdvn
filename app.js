@@ -448,6 +448,9 @@ app.post('/admin/delete', (req, res) => {
   fs.writeFileSync('./data/users.json', JSON.stringify(users, null, 2));
   res.redirect('/admin');
 });
+app.get('/', (req, res) => {
+  res.redirect('/login');
+});
 
 
 // -------------------- CHẠY SERVER --------------------
