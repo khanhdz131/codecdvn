@@ -7,7 +7,6 @@ const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
 const axios = require("axios");
- 26d76ba (Remove node_modules and update .gitignore)
 
 const app = express();
 
@@ -72,7 +71,7 @@ app.post('/callback', (req, res) => {
   res.status(200).send("OK");
 });
 
- 26d76ba (Remove node_modules and update .gitignore)
+ 76ba (Remove node_modules and update .gitignore)
 
 });
 
