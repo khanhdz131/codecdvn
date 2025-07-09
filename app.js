@@ -71,7 +71,7 @@ app.post('/callback', (req, res) => {
   res.status(200).send("OK");
 });
 
-  (Remove node_modules and update .gitignore)
+ 
 
 });
 
