@@ -4,6 +4,9 @@ const bodyParser = require("body-parser");
 const path = require("path");
 
 
+
+
+36b2a3c (Fix redirect / to /login)
 const fs = require("fs");
 const crypto = require("crypto");
 const axios = require("axios");
@@ -27,10 +30,7 @@ app.use(
   })
 );
 
-// Home page
-app.get("/", (req, res) => {
-  res.send("✅ Website đang chạy trên Koyeb thành công!");
-});
+
 
 // Route test callback (giả lập cho T3)
 app.post("/callback", (req, res) => {
@@ -270,7 +270,9 @@ function requireLogin(req, res, next) {
   next();
 }
 
-// ========== ROUTE CALLBACK NẠP TỪ T3 ==========
+//  ROUTE CALLBACK NẠP TỪ T3 
+
+
 app.post("/callback", (req, res) => {
   const { status, amount, request_id, message } = req.body;
 
@@ -484,8 +486,10 @@ app.post('/admin/delete', (req, res) => {
   res.redirect('/admin');
 });
 app.get('/', (req, res) => {
+  console.log('Truy cập /, session:', req.session);
   res.redirect('/login');
 });
+
 
 
 // -------------------- CHẠY SERVER --------------------
