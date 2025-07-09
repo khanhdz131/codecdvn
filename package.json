@@ -1,15 +1,12 @@
 {
-  "name": "codecdvn",
+  "name": "game-shop",
   "version": "1.0.0",
-  "description": "Roblox Shop VIP",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "ejs": "^3.1.9",
-    "body-parser": "^1.20.2",
-    "fs": "^0.0.1-security"
+    "ejs": "^3.1.9"
   }
 }
