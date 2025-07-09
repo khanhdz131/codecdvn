@@ -71,7 +71,7 @@ app.post('/callback', (req, res) => {
   res.status(200).send("OK");
 });
 
- 76ba (Remove node_modules and update .gitignore)
+  (Remove node_modules and update .gitignore)
 
 });
 
