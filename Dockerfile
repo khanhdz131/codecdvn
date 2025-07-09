@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3000
 
 # Lệnh chạy app
-CMD ["node", "app.js"]
+RUN npm install && npm start
