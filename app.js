@@ -2,6 +2,12 @@ const express = require("express");
 const session = require("express-session");
 const bodyParser = require("body-parser");
 const path = require("path");
+<<<<<<< HEAD
+=======
+const fs = require("fs");
+const crypto = require("crypto");
+const axios = require("axios");
+>>>>>>> 26d76ba (Remove node_modules and update .gitignore)
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,6 +28,7 @@ app.use(
   })
 );
 
+<<<<<<< HEAD
 // Home page
 app.get("/", (req, res) => {
   res.send("✅ Website đang chạy trên Koyeb thành công!");
@@ -32,6 +39,41 @@ app.post("/callback", (req, res) => {
   console.log("📩 Callback nhận được:", req.body);
   res.status(200).send("OK");
 });
+=======
+// TEST CALLBACK API
+app.post('/callback', (req, res) => {
+  const { status, amount, request_id, message } = req.body;
+  console.log("Callback Received:", req.body);
+
+  if (status === 1) {
+    const requestMapPath = './data/request.json';
+    const usersPath = './data/users.json';
+
+    let requestMap = JSON.parse(fs.readFileSync(requestMapPath, 'utf8'));
+    const username = requestMap[request_id];
+
+    if (!username) return res.send("❌ Không tìm thấy user từ request_id");
+
+    let users = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
+    let userIndex = users.findIndex(u => u.username === username);
+    if (userIndex === -1) return res.send("❌ User không tồn tại.");
+
+    const xuNhan = parseInt(amount);
+    users[userIndex].balance += xuNhan;
+    fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+
+    delete requestMap[request_id];
+    fs.writeFileSync(requestMapPath, JSON.stringify(requestMap, null, 2));
+
+    console.log(`✅ Cộng ${xuNhan} xu cho ${username}`);
+  } else {
+    console.log(`❌ Thẻ bị từ chối (${amount}đ): ${message}`);
+  }
+
+  res.status(200).send("OK");
+});
+
+>>>>>>> 26d76ba (Remove node_modules and update .gitignore)
 
 // Start server
 app.listen(PORT, () => {
@@ -151,7 +193,7 @@ app.post("/withdraw", (req, res) => {
 });
 
 // -------------------- CÁC ROUTE KHÁC --------------------
-const axios = require("axios"); // Đặt ở đầu file (chỉ thêm 1 lần)
+
 
 // Route hiển thị form nạp thẻ
 app.get('/napthe', (req, res) => {
