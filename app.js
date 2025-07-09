@@ -71,9 +71,7 @@ app.post('/callback', (req, res) => {
   res.status(200).send("OK");
 });
 
- 
 
-});
 
 // -------------------- ĐĂNG NHẬP --------------------
 app.get("/login", (req, res) => res.render("login"));
