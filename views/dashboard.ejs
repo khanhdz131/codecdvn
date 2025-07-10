@@ -2,201 +2,214 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard - Shop Acc Roblox</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <title>Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body {
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body, html {
       margin: 0;
-      font-family: 'Montserrat', sans-serif;
-      background-image: url("/images/bg1.jpg");
+      padding: 0;
+      height: 100%;
+    }
+
+    body {
+      background: url('/images/bg1.jpg') no-repeat center center fixed;
       background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      min-height: 100vh;
-      color: white;
-      overflow-x: hidden;
-      animation: bling 1s ease-in;
     }
 
-    @keyframes bling {
-      0% { opacity: 0; transform: scale(0.95); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    .fireworks {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      background: url('/images/gif2.jpg') center center no-repeat;
-      background-size: cover;
-      z-index: 999;
-      animation: fadeout 2.5s forwards;
-    }
-
-    @keyframes fadeout {
-      0% { opacity: 1; }
-      100% { opacity: 0; display: none; }
-    }
-
-    .topbar {
-      background: rgba(0,0,0,0.5);
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .user-info {
-      font-size: 14px;
+    .overlay {
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0; left: 0;
+      z-index: 0;
     }
 
     .container {
+      position: relative;
+      max-width: 1100px;
+      margin: auto;
+      padding: 60px 20px;
+      z-index: 1;
+      color: #fff;
+    }
+
+    h1 {
       text-align: center;
-      padding: 50px 20px;
-      flex: 1;
-    }
-
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 30px;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-
-    .menu-box {
-      background: rgba(0, 0, 0, 0.75);
-      border-radius: 16px;
-      padding: 25px 15px;
-      text-align: center;
-      color: white;
-      text-decoration: none;
-      transition: 0.3s;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-      cursor: pointer;
-      animation: fadeInUp 0.8s ease both;
-    }
-
-    .menu-box:hover {
-      transform: scale(1.05);
-      background: rgba(0, 0, 0, 0.85);
-    }
-
-    .menu-box div {
+      margin-bottom: 10px;
       font-size: 28px;
     }
 
-    .menu-box span {
-      margin-top: 10px;
-      font-size: 16px;
-      display: block;
-    }
-
-    .footer {
+    .balance-box {
       text-align: center;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 15px;
-      font-size: 14px;
-      color: #ccc;
+      margin-bottom: 35px;
     }
 
-    .floating-support {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #00cc88;
-      padding: 10px 16px;
-      border-radius: 999px;
-      font-weight: bold;
+    .balance-box p {
+      font-size: 17px;
+      margin: 5px 0;
+      background: rgba(255, 255, 255, 0.15);
+      display: inline-block;
+      padding: 8px 18px;
+      border-radius: 12px;
+      backdrop-filter: blur(5px);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      color: #333;
+      border-radius: 16px;
+      padding: 20px 20px 25px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
       cursor: pointer;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card h3 {
+      margin: 10px 0 5px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .card-img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+
+    .support-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #ff6b6b;
       color: white;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      transition: 0.3s;
-      z-index: 1000;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 26px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      z-index: 999;
+      transition: background 0.3s ease;
     }
 
-    .floating-support:hover {
-      background: #00b377;
-      transform: scale(1.05);
+    .support-btn:hover {
+      background: #ff4757;
     }
 
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .support-popup {
+      position: fixed;
+      bottom: 100px;
+      right: 25px;
+      background: white;
+      color: #333;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      padding: 20px;
+      width: 300px;
+      display: none;
+      animation: slideUp 0.4s ease;
+      z-index: 999;
+    }
+
+    .support-popup h4 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .support-popup p {
+      font-size: 14px;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
     }
   </style>
 </head>
 <body>
-  <div class="fireworks"></div>
 
-  <div class="topbar">
-    <div><strong>Shop Acc Roblox</strong></div>
-    <div class="user-info">
-      👤 <%= user.username %> | 💰 Xu: <%= user.balance %> | 💎 Robux: <%= user.robux %>
-       <a href="/doimatkhau" style="color: #f99;">Đổi Mật Khẩu</a>
-      | <a href="/logout" style="color: #f99;">Đăng xuất</a>
-    </div>
-  </div>
+  <div class="overlay"></div>
 
   <div class="container">
-    <div class="menu-grid">
-      <a href="/withdraw" class="menu-box">
-        <div>🔁</div>
-        <span>Rút Robux</span>
-      </a>
-      <a href="/spin" class="menu-box">
-        <div>🎁</div>
-        <span>Quay Hộp Quà</span>
-      </a>
-      <a href="/topup" class="menu-box">
-        <div>💳</div>
-        <span>Nạp Tiền</span>
-      </a>
-      <a href="/shop" class="menu-box">
-        <div>🛒</div>
-        <span>Shop Acc</span>
-      </a>
-      <a href="/history" class="menu-box">
-        <div>📜</div>
-        <span>Lịch Sử</span>
-      </a>
-      <div onclick="showSupport()" class="menu-box">
-        <div>📩</div>
-        <span>Hỗ Trợ</span>
+    <h1>Xin chào, <%= user.username %> 👋</h1>
+
+    <div class="balance-box">
+      <p>💰 Xu: <strong><%= user.balance %></strong></p>
+      <p>🪙 Robux: <strong><%= user.robux %></strong></p>
+    </div>
+
+    <div class="grid">
+      <div class="card" onclick="location.href='/withdraw'">
+        <img src="/images/withdraw.png" alt="Withdraw" class="card-img">
+        <h3>Rút Robux</h3>
+        <p>Chuyển Robux về tài khoản Roblox</p>
+      </div>
+
+      <div class="card" onclick="location.href='/spin'">
+        <img src="/images/sp.jpg" alt="Spin" class="card-img">
+        <h3>Quay Hộp Quà</h7>
+        <p>Nhận Robux ngẫu nhiên cực hot</p>
+      </div>
+
+      <div class="card" onclick="location.href='/topup'">
+        <img src="/images/napthe.jpg" alt="Topup" class="card-img">
+        <h3>Nạp Tiền</h3>
+        <p>Nạp xu qua thẻ cào hoặc ATM</p>
+      </div>
+
+      <div class="card" onclick="location.href='/shop'">
+        <img src="/images/shop.png" alt="Shop" class="card-img">
+        <h3>Shop Acc</h3>
+        <p>Mua tài khoản Roblox cực VIP</p>
+      </div>
+
+      <div class="card" onclick="location.href='/history'">
+        <img src="/images/history.png" alt="History" class="card-img">
+        <h3>Lịch Sử</h3>
+        <p>Xem lịch sử mua acc và giao dịch</p>
       </div>
     </div>
   </div>
 
-  <div class="footer">
-    © 2025 Shop Acc Roblox - Uy tín, chất lượng, hỗ trợ 24/7
+  <!-- Nút hỗ trợ -->
+  <button class="support-btn" onclick="toggleSupport()">💬</button>
+
+  <!-- Popup hỗ trợ -->
+  <div class="support-popup" id="supportPopup">
+    <h4>Hỗ trợ</h4>
+    <p>tiktok: <strong>@robux_napre </strong></p>
+    <p>Email: <strong>support@robloxshop.vip</strong></p>
   </div>
 
-  <div class="floating-support" onclick="showSupport()">💬 Hỗ Trợ</div>
-
   <script>
-    function showSupport() {
-      Swal.fire({
-        title: 'Liên hệ hỗ trợ',
-        html: `
-          <p>📞 tiktok: <strong>robux_napre</strong></p>
-          <p>📧 Email: <strong>robuxnapre@gmail.com</strong></p>
-        
-        `,
-        icon: 'info',
-        confirmButtonText: 'Đóng'
-      });
+    function toggleSupport() {
+      const popup = document.getElementById("supportPopup");
+      popup.style.display = popup.style.display === "block" ? "none" : "block";
     }
   </script>
+
 </body>
 </html>

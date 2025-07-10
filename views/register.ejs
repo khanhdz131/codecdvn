@@ -2,135 +2,200 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Đăng ký - Roblox Shop VIP</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <title>Đăng ký tài khoản</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Roboto', sans-serif;
+      font-family: 'Inter', sans-serif;
     }
 
     body {
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      height: 100vh;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      margin: 0;
       display: flex;
       align-items: center;
       justify-content: center;
+      height: 100vh;
     }
 
-    .register-box {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      padding: 40px;
+    .form-box {
+      background: white;
+      padding: 40px 35px;
       border-radius: 16px;
-      width: 100%;
-      max-width: 420px;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.2);
+      width: 400px;
+      animation: fadeSlide 0.6s ease;
+    }
+
+    h2 {
       text-align: center;
-      color: white;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-      animation: fadeIn 1s ease;
+      margin-bottom: 25px;
+      color: #333;
+      font-weight: 600;
     }
 
-    .register-box h2 {
-      margin-bottom: 20px;
-      font-size: 26px;
-      font-weight: bold;
-      color: #00e0ff;
-    }
-
-    .input-group {
-      margin-bottom: 20px;
-      text-align: left;
-    }
-
-    .input-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-    }
-
-    .input-group input {
+    input[type="text"],
+    input[type="password"] {
       width: 100%;
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
+      padding: 13px 15px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 10px;
       font-size: 15px;
+      transition: 0.3s;
     }
 
-    .input-group input::placeholder {
-      color: #ccc;
+    input:focus {
+      border-color: #667eea;
+      outline: none;
     }
 
-    .btn {
+    button {
       width: 100%;
+      background-color: #667eea;
+      color: white;
       padding: 12px;
-      background: #00e0ff;
-      color: black;
       border: none;
-      border-radius: 8px;
-      font-size: 16px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
       cursor: pointer;
-      font-weight: bold;
+      margin-top: 15px;
       transition: background 0.3s ease;
     }
 
-    .btn:hover {
-      background: #00c0d6;
+    button:hover {
+      background-color: #5a67d8;
     }
 
-    .bottom-link {
+    .back-btn {
+      display: block;
       margin-top: 20px;
-      color: #ccc;
+      text-align: center;
       font-size: 14px;
-    }
-
-    .bottom-link a {
-      color: #00e0ff;
+      color: #555;
       text-decoration: none;
     }
 
-    .bottom-link a:hover {
+    .back-btn:hover {
       text-decoration: underline;
     }
 
+    /* Popup */
+    .popup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .popup-content {
+      background: white;
+      padding: 30px 35px;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      position: relative;
+      width: 350px;
+      text-align: center;
+      animation: popupSlide 0.4s ease;
+    }
+
+    .popup-content.success { border-left: 6px solid #28a745; }
+    .popup-content.error   { border-left: 6px solid #dc3545; }
+
+    .popup-content h3 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    .popup-content p {
+      margin-bottom: 15px;
+      font-size: 15px;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      font-size: 20px;
+      cursor: pointer;
+      color: #999;
+    }
+
+    .close-btn:hover {
+      color: #000;
+    }
+
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes popupSlide {
+      from { transform: translateY(-30px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
 
-  <form class="register-box" method="POST" action="/register">
-    <h2>📝 Tạo tài khoản mới</h2>
-
-    <div class="input-group">
-      <label for="username">Tên đăng nhập</label>
-      <input type="text" id="username" name="username" placeholder="Nhập username" required>
+  <% if (typeof error !== 'undefined') { %>
+    <div class="popup" id="popup">
+      <div class="popup-content error">
+        <span class="close-btn" onclick="closePopup()">×</span>
+        <h3>❌ Lỗi</h3>
+        <p><%= error %></p>
+      </div>
     </div>
+  <% } %>
 
-    <div class="input-group">
-      <label for="password">Mật khẩu</label>
-      <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required>
+  <% if (typeof success !== 'undefined') { %>
+    <div class="popup" id="popup">
+      <div class="popup-content success">
+        <span class="close-btn" onclick="closePopup()">×</span>
+        <h3>✅ Thành công</h3>
+        <p><%= success %></p>
+      </div>
     </div>
+  <% } %>
 
-    <div class="input-group">
-      <label for="confirmPassword">Nhập lại mật khẩu</label>
-      <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Xác nhận mật khẩu" required>
-    </div>
+  <div class="form-box">
+    <h2>Đăng ký tài khoản</h2>
+    <form method="POST" action="/register" onsubmit="return validateForm()">
+      <input type="text" name="username" id="username" placeholder="Tên đăng nhập" required>
+      <input type="password" name="password" id="password" placeholder="Mật khẩu" required>
+      <input type="password" id="confirm" placeholder="Nhập lại mật khẩu" required>
+      <button type="submit">Đăng ký</button>
+    </form>
+    <a class="back-btn" href="/login">← Quay về trang đăng nhập</a>
+  </div>
 
-    <button class="btn" type="submit">Đăng ký</button>
+  <script>
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
+    }
 
-    <div class="bottom-link">
-      Đã có tài khoản? <a href="/login">Đăng nhập ngay</a>
-    </div>
-  </form>
+    function validateForm() {
+      const pass = document.getElementById("password").value;
+      const confirm = document.getElementById("confirm").value;
+      if (pass !== confirm) {
+        alert("❌ Mật khẩu không khớp!");
+        return false;
+      }
+      return true;
+    }
+  </script>
 
 </body>
 </html>

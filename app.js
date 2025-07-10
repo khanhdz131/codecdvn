@@ -2,26 +2,15 @@ const express = require("express");
 const session = require("express-session");
 const bodyParser = require("body-parser");
 const path = require("path");
-
-
-
-
-36b2a3c (Fix redirect / to /login)
 const fs = require("fs");
-const crypto = require("crypto");
-const axios = require("axios");
 
 const app = express();
 
-
-// Setup view engine & static files
+// ⚙️ CẤU HÌNH CƠ BẢN — CHỈ GỌI 1 LẦN DUY NHẤT
 app.use(express.static(path.join(__dirname, "public")));
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
 app.use(
   session({
     secret: "secret-key",
@@ -30,47 +19,64 @@ app.use(
   })
 );
 
+// 🔐 Middleware bảo vệ route
+function requireLogin(req, res, next) {
+  if (!req.session.user) return res.redirect("/login");
+  next();
+}
+
+// ✅ Route test gốc
 
 
-// Route test callback (giả lập cho T3)
-app.post("/callback", (req, res) => {
-  console.log("📩 Callback nhận được:", req.body);
-  res.status(200).send("OK");
-});
+// ✨ Các route khác bạn có thể thêm dần sau khi test OK
+// app.get("/login", ...);
+// app.post("/login", ...);
+
+
 
 // TEST CALLBACK API
-app.post('/callback', (req, res) => {
-  const { status, amount, request_id, message } = req.body;
-  console.log("Callback Received:", req.body);
+app.post("/callback", (req, res) => {
+  try {
+    const { status, amount, request_id, message } = req.body;
 
-  if (status === 1) {
-    const requestMapPath = './data/request.json';
-    const usersPath = './data/users.json';
+    const username = request_id.split("_")[0];
 
-    let requestMap = JSON.parse(fs.readFileSync(requestMapPath, 'utf8'));
-    const username = requestMap[request_id];
+    const users = JSON.parse(fs.readFileSync("./data/users.json", "utf8"));
+    const user = users.find(u => u.username === username);
 
-    if (!username) return res.send("❌ Không tìm thấy user từ request_id");
+    if (!user) return res.status(404).send("User not found");
 
-    let users = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
-    let userIndex = users.findIndex(u => u.username === username);
-    if (userIndex === -1) return res.send("❌ User không tồn tại.");
+    user.xu = (user.xu || 0) + parseInt(amount);
 
-    const xuNhan = parseInt(amount);
-    users[userIndex].balance += xuNhan;
-    fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+    fs.writeFileSync("./data/users.json", JSON.stringify(users, null, 2), "utf8");
 
-    delete requestMap[request_id];
-    fs.writeFileSync(requestMapPath, JSON.stringify(requestMap, null, 2));
+    // Lưu vào lịch sử
+ const historyPath = "./data/lichsunap.json";
+    let history = [];
 
-    console.log(`✅ Cộng ${xuNhan} xu cho ${username}`);
-  } else {
-    console.log(`❌ Thẻ bị từ chối (${amount}đ): ${message}`);
+    if (fs.existsSync(historyPath)) {
+      history = JSON.parse(fs.readFileSync(historyPath, "utf8"));
+    }
+
+    history.push({
+      username,
+      request_id,
+      amount,
+      status,
+      message,
+      time: new Date().toLocaleString("vi-VN")
+    });
+
+    fs.writeFileSync(historyPath, JSON.stringify(history, null, 2), "utf8");
+
+    console.log(`✅ [NAP CALLBACK] +${amount} xu cho ${username}`);
+    return res.status(200).send("OK");
+
+  } catch (err) {
+    console.error("❌ CALLBACK LỖI:", err);
+    return res.status(500).send("Internal Server Error");
   }
-
-  res.status(200).send("OK");
 });
-
 
 
 // -------------------- ĐĂNG NHẬP --------------------
@@ -88,6 +94,44 @@ app.post("/login", (req, res) => {
 
 app.get("/logout", (req, res) => {
   req.session.destroy(() => res.redirect("/login"));
+});
+
+
+// GET: Hiển thị trang đăng ký
+app.get('/register', (req, res) => {
+    res.render('register');
+});
+
+// POST: Xử lý đăng ký và lưu user vào users.json
+app.post("/register", (req, res) => {
+  const { username, password } = req.body;
+  const usersFile = path.join(__dirname, "data", "users.json");
+
+  if (!fs.existsSync(path.join(__dirname, "data"))) {
+    fs.mkdirSync(path.join(__dirname, "data"));
+  }
+
+  let users = [];
+  if (fs.existsSync(usersFile)) {
+    users = JSON.parse(fs.readFileSync(usersFile, "utf8"));
+  }
+
+  const existingUser = users.find(u => u.username === username);
+  if (existingUser) {
+    return res.render("register", { error: "Tên tài khoản đã tồn tại!" });
+  }
+
+  // ✅ Thêm mặc định balance và robux tại đây
+  users.push({
+    username,
+    password,
+    balance: 2000,
+    robux: 20
+  });
+
+  fs.writeFileSync(usersFile, JSON.stringify(users, null, 2), "utf8");
+
+  res.render("register", { success: "Đăng ký thành công!" });
 });
 
 // -------------------- DASHBOARD --------------------
@@ -118,7 +162,7 @@ app.post('/spin', (req, res) => {
     return res.json({ error: "Bạn không đủ Xu để quay!" });
   }
 
-  const rewards = [5, 10, 15, 20, 25, 30, 50, 100, 200, 250];
+  const rewards = [300, 150, 50, 200, 100, 24, 30, 29, 67, 55, 78, 52, 98, 1000, 73, 72, 81, 75, 73, 73, 62, 62, 44];
   const reward = rewards[Math.floor(Math.random() * rewards.length)];
 
   user.balance -= 20000;
@@ -190,6 +234,10 @@ app.post("/withdraw", (req, res) => {
 
 // Route hiển thị form nạp thẻ
 app.get('/napthe', (req, res) => {
+  
+  res.render("login");
+
+
   const username = req.session.user?.username || 'guest';
   res.render('napthe', { username });
 });
@@ -198,7 +246,8 @@ app.get('/napthe', (req, res) => {
 app.post("/napthe", async (req, res) => {
   const { loaithe, menhgia, mathe, seri } = req.body;
 
-  const request_id = Date.now().toString();
+  const request_id = `${req.session.user.username}_${Date.now()}`;
+
   const username = req.session.user?.username || "guest";
 
 const requestMapPath = './data/request.json';
@@ -209,8 +258,8 @@ if (fs.existsSync(requestMapPath)) {
 mapData[request_id] = username;
 fs.writeFileSync(requestMapPath, JSON.stringify(mapData, null, 2));
 
-  const partner_id = "17305102095";
-  const partner_key = "637e2af464f3b59d6928828b665b4b67";
+  const partner_id = "16055972294";
+  const partner_key = "a011a9931da7a3c4dfb26cdfca167f45";
 
   const crypto = require("crypto");
   const sign = crypto
@@ -218,33 +267,31 @@ fs.writeFileSync(requestMapPath, JSON.stringify(mapData, null, 2));
     .update(partner_id + mathe + seri + menhgia + partner_key)
     .digest("hex");
 
-  try {
-    const response = await axios.post("https://thesieure.com/chargingws/v2", {
-      telco: loaithe,
-      code: mathe,
-      serial: seri,
-      amount: menhgia,
-      request_id,
-      partner_id,
-      sign,
-      command: "charging",
- 
-     
-      callback_url: "https://codecdvnrb.onrender.com/callback"
-      
-    });
+ try {
+  const response = await axios.post("https://api.naptudong.com/cardv2", {
+    telco,
+    amount: menhgia,
+    code: mathe,
+    serial: seri,
+    request_id,
+    partner_id,
+    sign,
+    callback: "https://codecdvn-production.up.railway.app/callback"
+  });
 
-    if (response.data.status === 1) {
-      res.send("✅ Gửi thẻ thành công, vui lòng đợi duyệt...");
-    } else {
-      res.send("❌ Lỗi gửi thẻ: " + response.data.message);
-    }
-  } catch (err) {
-    console.error(err.message);
-    res.send("⚠️ Không thể kết nối đến máy chủ trung gian.");
+  console.log("[NAP THE] Đã gửi thẻ đến Naptudong:", request_id);
+
+  if (response.data.status === 1) {
+    res.send("✅ Gửi thẻ thành công, vui lòng đợi duyệt...");
+  } else {
+    res.send("❌ Lỗi gửi thẻ: " + response.data.message);
   }
-});
 
+} catch (err) {
+  console.error("❌ Gửi thẻ thất bại:", err.response?.data || err.message);
+  res.send("⚠️ Không thể kết nối đến máy chủ trung gian.");
+}
+});
 
 // Cấu hình view và static
 app.use(express.static(path.join(__dirname, "public")));
@@ -493,7 +540,7 @@ app.get('/', (req, res) => {
 
 
 // -------------------- CHẠY SERVER --------------------
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log("✅ Server đang chạy tại http://localhost:" + PORT);
+  console.log(`Server is running on port ${PORT}`);
 });
