@@ -2,9 +2,10 @@
   "name": "game-shop",
   "version": "1.0.0",
   "main": "app.js",
-  "scripts": {,
+  "scripts": {
     "start": "node app.js"
   },
+  
   "dependencies": {
     "axios": "^1.10.0",
     "body-parser": "^2.2.0",
