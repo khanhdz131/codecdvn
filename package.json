@@ -10,11 +10,10 @@
     "body-parser": "^2.2.0",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
-<<<<<<< HEAD
+
     "ejs": "^3.1.9",
       "express-session": "^1.17.3"
-=======
+
     "express-session": "^1.18.1"
->>>>>>> 36b2a3c (Fix redirect / to /login)
   }
 }
