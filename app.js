@@ -16,7 +16,6 @@ app.get('/api/users', (req, res) => {
 });
 
 
-});
 // ⚙️ CẤU HÌNH CƠ BẢN — CHỈ GỌI 1 LẦN DUY NHẤT
 app.use(express.static(path.join(__dirname, "public")));
 
