@@ -15,8 +15,7 @@ app.get('/api/users', (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+
 });
 // ⚙️ CẤU HÌNH CƠ BẢN — CHỈ GỌI 1 LẦN DUY NHẤT
 app.use(express.static(path.join(__dirname, "public")));
