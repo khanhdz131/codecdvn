@@ -5,7 +5,19 @@ const path = require("path");
 const fs = require("fs");
 
 const app = express();
+app.get('/api/users', (req, res) => {
+  try {
+    const data = fs.readFileSync('./data/users.json', 'utf8');
+    const users = JSON.parse(data);
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: 'Lỗi đọc file user' });
+  }
+});
 
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 // ⚙️ CẤU HÌNH CƠ BẢN — CHỈ GỌI 1 LẦN DUY NHẤT
 app.use(express.static(path.join(__dirname, "public")));
 
