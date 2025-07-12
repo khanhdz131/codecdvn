@@ -253,55 +253,37 @@ app.get('/napthe', (req, res) => {
 });
 
 // Route xử lý gửi thẻ tới web trung gian
-app.post("/napthe", async (req, res) => {
-  const { loaithe, menhgia, mathe, seri } = req.body;
+const axios = require('axios');
+const crypto = require('crypto');
 
-  const request_id = `${req.session.user.username}_${Date.now()}`;
+app.post('/napthe', async (req, res) => {
+  const { type, menhgia, serial, pin } = req.body;
 
-  const username = req.session.user?.username || "guest";
+  const partner_id = '16055972294'; // thay bằng ID thật
+  const partner_key = 'a011a9931da7a3c4dfb26cdfca167f45'; // thay bằng KEY thật
 
-const requestMapPath = './data/request.json';
-let mapData = {};
-if (fs.existsSync(requestMapPath)) {
-  mapData = JSON.parse(fs.readFileSync(requestMapPath, "utf8"));
-}
-mapData[request_id] = username;
-fs.writeFileSync(requestMapPath, JSON.stringify(mapData, null, 2));
+  const sign = crypto.createHash('md5')
+    .update(16055972294 + pin + serial + menhgia + a011a9931da7a3c4dfb26cdfca167f45)
+    .digest('hex');
 
-  const partner_id = "16055972294";
-  const partner_key = "a011a9931da7a3c4dfb26cdfca167f45";
+  try {
+    const response = await axios.post('https://api.naptudong.com/cardv2', {
+      request_id: Date.now(),
+      telco: type,
+      amount: menhgia,
+      serial: serial,
+      code: pin,
+      partner_id: 16055972294,
+      sign: sign
+    });
 
-  const crypto = require("crypto");
-  const sign = crypto
-    .createHash("md5")
-    .update(partner_id + mathe + seri + menhgia + partner_key)
-    .digest("hex");
-
- try {
-  const response = await axios.post("https://api.naptudong.com/cardv2", {
-    telco,
-    amount: menhgia,
-    code: mathe,
-    serial: seri,
-    request_id,
-    partner_id,
-    sign,
-    callback: "https://codecdvn-production.up.railway.app/callback"
-  });
-
-  console.log("[NAP THE] Đã gửi thẻ đến Naptudong:", request_id);
-
-  if (response.data.status === 1) {
-    res.send("✅ Gửi thẻ thành công, vui lòng đợi duyệt...");
-  } else {
-    res.send("❌ Lỗi gửi thẻ: " + response.data.message);
+    res.json(response.data);
+  } catch (err) {
+    console.error('Lỗi nạp thẻ:', err.message);
+    res.status(500).json({ error: 'Lỗi khi gửi đến napthe.vn' });
   }
-
-} catch (err) {
-  console.error("❌ Gửi thẻ thất bại:", err.response?.data || err.message);
-  res.send("⚠️ Không thể kết nối đến máy chủ trung gian.");
-}
 });
+
 
 // Cấu hình view và static
 app.use(express.static(path.join(__dirname, "public")));
