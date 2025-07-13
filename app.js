@@ -263,7 +263,7 @@ app.post('/napthe', async (req, res) => {
   const partner_key = 'a011a9931da7a3c4dfb26cdfca167f45'; // thay bằng KEY thật
 
   const sign = crypto.createHash('md5')
-    .update(16055972294 + pin + serial + menhgia + a011a9931da7a3c4dfb26cdfca167f45)
+   .update(partner_id + pin + serial + menhgia + partner_key)
     .digest('hex');
 
   try {
@@ -273,7 +273,7 @@ app.post('/napthe', async (req, res) => {
       amount: menhgia,
       serial: serial,
       code: pin,
-      partner_id: 16055972294,
+      partner_id: partner_id,
       sign: sign
     });
 
