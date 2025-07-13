@@ -251,51 +251,52 @@ const crypto = require('crypto');
 const partner_id = process.env.PARTNER_ID;
 const partner_key = process.env.PARTNER_KEY;
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// Tạo chữ ký MD5 để gửi cho web T3
+function taoChuKyMD5({ partner_id, code, serial, amount, api_key }) {
+  const chuoiGoc = `${partner_id}${code}${serial}${amount}${api_key}`;
+  return crypto.createHash('md5').update(chuoiGoc).digest('hex');
+}
+
+// Route xử lý nạp thẻ
 app.post('/napthe', async (req, res) => {
-  const { type, menhgia, serial, pin } = req.body;
+  const { telco, code, serial, amount } = req.body;
 
-  // Tạo chữ ký
+  // Lấy thông tin xác thực từ .env
+  const partner_id = process.env.16055972294;
+  const api_key = process.env.a011a9931da7a3c4dfb26cdfca167f45;
 
-  const sign = crypto.createHash('md5')
-    .update(partner_id + pin + serial + menhgia + partner_key)
-    .digest('hex');
+  // Tạo mã ký MD5
+  const sign = taoChuKyMD5({ 16055972294, code, serial, amount, a011a9931da7a3c4dfb26cdfca167f45 });
 
+  // Gửi yêu cầu nạp thẻ sang Web T3
   try {
-    const response = await axios.post('https://api.naptudong.com/cardv2', {
-
-      request_id: `${req.session.user?.username}_${Date.now()}`,
-
-      request_id: `${req.session.user?.username}_${Date.now()}`, // để nhận callback đúng user
-
-      telco: type,
-      amount: menhgia,
-      serial: serial,
-      code: pin,
-      partner_id: partner_id,
-      sign: sign
+    const response = await axios.post('https://naptudong.com/api/napthe', {
+      telco,
+      code,
+      serial,
+      amount,
+      partner_id,
+      sign
     });
 
-  
-    
-    
-    console.log('✅ Phản hồi từ T3:', response.data);
+    const ketQua = response.data;
 
-    // Lưu tạm để xử lý callback
-    const requestMapPath = './data/request.json';
-    let requestMap = {};
-    if (fs.existsSync(requestMapPath)) {
-      requestMap = JSON.parse(fs.readFileSync(requestMapPath, 'utf8'));
+    if (ketQua.status === 'success') {
+      // Nạp thành công → chuyển hướng hoặc phản hồi
+      res.send(`<script>alert("Nạp thẻ thành công!"); window.location.href = "/thanh-cong";</script>`);
+    } else {
+      // Nạp thất bại → báo lỗi cho người dùng
+      res.send(`<script>alert("Thất bại: ${ketQua.message}"); window.location.href = "/";</script>`);
     }
-
-    requestMap[response.data.request_id] = req.session.user?.username || 'guest';
-    fs.writeFileSync(requestMapPath, JSON.stringify(requestMap, null, 2));
-
-    res.json(response.data);
   } catch (err) {
-    console.error('❌ Lỗi gửi đến T3:', err.response?.data || err.message);
-    res.status(500).json({ error: 'Lỗi kết nối đến T3' });
+    console.error('Lỗi khi gọi API Web T3:', err.message);
+    res.send(`<script>alert("Lỗi hệ thống, thử lại sau."); window.location.href = "/";</script>`);
   }
 });
+
 
 
 
