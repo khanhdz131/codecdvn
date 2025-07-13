@@ -273,7 +273,7 @@ const sign = taoChukyMD5(partner_id, code, serial, amount, api_key);
 
   // Gửi yêu cầu nạp thẻ sang Web T3
   try {
-    const response = await axios.post('https://naptudong.com/api/doithecao', {
+    const response = await axios.post('https://naptudong.com/doithecao', {
       telco,
       code,
       serial,
