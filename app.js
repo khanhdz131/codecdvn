@@ -276,6 +276,12 @@ app.post('/napthe', async (req, res) => {
       partner_id: partner_id,
       sign: sign
     });
+    console.log('✅ Phản hồi từ T3:', response.data);
+  res.json(response.data);
+} catch (err) {
+  console.error('❌ Lỗi gửi đến T3:', err.response?.data || err.message);
+  res.status(500).json({ error: 'Lỗi kết nối đến T3' });
+}
 
     res.json(response.data);
   } catch (err) {
