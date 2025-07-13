@@ -275,9 +275,9 @@ app.post('/napthe', async (req, res) => {
       sign: sign
     });
 
-
+  
     
-
+    
     console.log('✅ Phản hồi từ T3:', response.data);
 
     // Lưu tạm để xử lý callback
@@ -290,20 +290,6 @@ app.post('/napthe', async (req, res) => {
     requestMap[response.data.request_id] = req.session.user?.username || 'guest';
     fs.writeFileSync(requestMapPath, JSON.stringify(requestMap, null, 2));
 
-
-    console.log('✅ Phản hồi từ T3:', response.data);
-
-    // Lưu tạm để xử lý callback
-    const requestMapPath = './data/request.json';
-    let requestMap = {};
-    if (fs.existsSync(requestMapPath)) {
-      requestMap = JSON.parse(fs.readFileSync(requestMapPath, 'utf8'));
-    }
-
-    requestMap[response.data.request_id] = req.session.user?.username || 'guest';
-    fs.writeFileSync(requestMapPath, JSON.stringify(requestMap, null, 2));
-
->>>>>>> 492ad60b4824d758a40960363a6840929dcb7e2b
     res.json(response.data);
   } catch (err) {
     console.error('❌ Lỗi gửi đến T3:', err.response?.data || err.message);
@@ -344,7 +330,7 @@ app.post("/callback", (req, res) => {
   const { status, amount, request_id, message } = req.body;
 
   if (status === 1) {
-    const requestMapPath = './data/request.json';
+    
     const usersPath = './data/users.json';
 
     let requestMap = JSON.parse(fs.readFileSync(requestMapPath, 'utf8'));
