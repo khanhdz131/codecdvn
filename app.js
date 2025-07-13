@@ -1,10 +1,22 @@
 const express = require("express");
+require('dotenv').config();
+
 const session = require("express-session");
 const bodyParser = require("body-parser");
 const path = require("path");
 const fs = require("fs");
 
 const app = express();
+app.get('/api/users', (req, res) => {
+  try {
+    const data = fs.readFileSync('./data/users.json', 'utf8');
+    const users = JSON.parse(data);
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: 'Lỗi đọc file user' });
+  }
+});
+
 
 // ⚙️ CẤU HÌNH CƠ BẢN — CHỈ GỌI 1 LẦN DUY NHẤT
 app.use(express.static(path.join(__dirname, "public")));
@@ -233,65 +245,52 @@ app.post("/withdraw", (req, res) => {
 
 
 // Route hiển thị form nạp thẻ
-app.get('/napthe', (req, res) => {
-  
-  res.render("login");
+const axios = require('axios');
+const crypto = require('crypto');
 
+const partner_id = process.env.PARTNER_ID;
+const partner_key = process.env.PARTNER_KEY;
 
-  const username = req.session.user?.username || 'guest';
-  res.render('napthe', { username });
-});
+app.post('/napthe', async (req, res) => {
+  const { type, menhgia, serial, pin } = req.body;
 
-// Route xử lý gửi thẻ tới web trung gian
-app.post("/napthe", async (req, res) => {
-  const { loaithe, menhgia, mathe, seri } = req.body;
+  const sign = crypto.createHash('md5')
+    .update(partner_id + pin + serial + menhgia + partner_key)
+    .digest('hex');
 
-  const request_id = `${req.session.user.username}_${Date.now()}`;
+  try {
+    const response = await axios.post('https://api.naptudong.com/cardv2', {
+      request_id: `${req.session.user?.username}_${Date.now()}`,
+      telco: type,
+      amount: menhgia,
+      serial: serial,
+      code: pin,
+      partner_id: partner_id,
+      sign: sign
+    });
 
-  const username = req.session.user?.username || "guest";
+    
 
-const requestMapPath = './data/request.json';
-let mapData = {};
-if (fs.existsSync(requestMapPath)) {
-  mapData = JSON.parse(fs.readFileSync(requestMapPath, "utf8"));
-}
-mapData[request_id] = username;
-fs.writeFileSync(requestMapPath, JSON.stringify(mapData, null, 2));
+    console.log('✅ Phản hồi từ T3:', response.data);
 
-  const partner_id = "16055972294";
-  const partner_key = "a011a9931da7a3c4dfb26cdfca167f45";
+    // Lưu tạm để xử lý callback
+    const requestMapPath = './data/request.json';
+    let requestMap = {};
+    if (fs.existsSync(requestMapPath)) {
+      requestMap = JSON.parse(fs.readFileSync(requestMapPath, 'utf8'));
+    }
 
-  const crypto = require("crypto");
-  const sign = crypto
-    .createHash("md5")
-    .update(partner_id + mathe + seri + menhgia + partner_key)
-    .digest("hex");
+    requestMap[response.data.request_id] = req.session.user?.username || 'guest';
+    fs.writeFileSync(requestMapPath, JSON.stringify(requestMap, null, 2));
 
- try {
-  const response = await axios.post("https://api.naptudong.com/cardv2", {
-    telco,
-    amount: menhgia,
-    code: mathe,
-    serial: seri,
-    request_id,
-    partner_id,
-    sign,
-    callback: "https://codecdvn-production.up.railway.app/callback"
-  });
-
-  console.log("[NAP THE] Đã gửi thẻ đến Naptudong:", request_id);
-
-  if (response.data.status === 1) {
-    res.send("✅ Gửi thẻ thành công, vui lòng đợi duyệt...");
-  } else {
-    res.send("❌ Lỗi gửi thẻ: " + response.data.message);
+    res.json(response.data);
+  } catch (err) {
+    console.error('❌ Lỗi gửi đến T3:', err.response?.data || err.message);
+    res.status(500).json({ error: 'Lỗi kết nối đến T3' });
   }
-
-} catch (err) {
-  console.error("❌ Gửi thẻ thất bại:", err.response?.data || err.message);
-  res.send("⚠️ Không thể kết nối đến máy chủ trung gian.");
-}
 });
+
+
 
 // Cấu hình view và static
 app.use(express.static(path.join(__dirname, "public")));
