@@ -282,7 +282,7 @@ const sign = taoChukyMD5(partner_id, code, serial, amount, api_key);
       sign
     });
 
-    const ketQua = response.data;
+  console.log('Phản hồi từ Web T3:', response.data);
 
     if (ketQua.status === 'success') {
       // Nạp thành công → chuyển hướng hoặc phản hồi
