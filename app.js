@@ -257,7 +257,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Tạo chữ ký MD5 để gửi cho web T3
-const crypto = require('crypto');
+
 
 function taoChuKyMD5({ partner_key, code, command, partner_id, request_id, serial, telco }) {
   const chuoiGoc = `${partner_key}${code}${command}${partner_id}${request_id}${serial}${telco}`;
