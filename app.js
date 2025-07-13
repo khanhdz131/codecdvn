@@ -265,8 +265,8 @@ app.post('/napthe', async (req, res) => {
   const { telco, code, serial, amount } = req.body;
 
   // Lấy thông tin xác thực từ .env
-  const partner_id = process.env.16055972294;
-  const api_key = process.env.a011a9931da7a3c4dfb26cdfca167f45;
+  const partner_id = process.env.PARTNER_ID;
+  const api_key = process.env..API_KEY_T3;
 
   // Tạo mã ký MD5
   const sign = taoChuKyMD5({ 16055972294, code, serial, amount, a011a9931da7a3c4dfb26cdfca167f45 });
