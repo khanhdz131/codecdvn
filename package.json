@@ -2,7 +2,11 @@
   "name": "game-shop",
   "version": "1.0.0",
   "description": "Web bán tài khoản game Roblox",
+
   "main": "app.js",
+
+
+
   "scripts": {
     "start": "node app.js"
   },
