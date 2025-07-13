@@ -28,8 +28,7 @@ app.use(
     secret: "secret-key",
     resave: false,
     saveUninitialized: true,
-    app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+    
 
   })
 );
