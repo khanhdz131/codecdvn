@@ -243,32 +243,23 @@ app.post("/withdraw", (req, res) => {
 
 
 // Route hiển thị form nạp thẻ
-app.get('/napthe', (req, res) => {
-  
-  res.render("login");
-
-
-  const username = req.session.user?.username || 'guest';
-  res.render('napthe', { username });
-});
-
-// Route xử lý gửi thẻ tới web trung gian
 const axios = require('axios');
 const crypto = require('crypto');
+
+const partner_id = process.env.PARTNER_ID;
+const partner_key = process.env.PARTNER_KEY;
 
 app.post('/napthe', async (req, res) => {
   const { type, menhgia, serial, pin } = req.body;
 
-  const partner_id = '16055972294'; // thay bằng ID thật
-  const partner_key = 'a011a9931da7a3c4dfb26cdfca167f45'; // thay bằng KEY thật
-
+  // Tạo chữ ký
   const sign = crypto.createHash('md5')
-   .update(partner_id + pin + serial + menhgia + partner_key)
+    .update(partner_id + pin + serial + menhgia + partner_key)
     .digest('hex');
 
   try {
     const response = await axios.post('https://api.naptudong.com/cardv2', {
-      request_id: Date.now(),
+      request_id: `${req.session.user?.username}_${Date.now()}`, // để nhận callback đúng user
       telco: type,
       amount: menhgia,
       serial: serial,
@@ -276,19 +267,26 @@ app.post('/napthe', async (req, res) => {
       partner_id: partner_id,
       sign: sign
     });
+
     console.log('✅ Phản hồi từ T3:', response.data);
-  res.json(response.data);
-} catch (err) {
-  console.error('❌ Lỗi gửi đến T3:', err.response?.data || err.message);
-  res.status(500).json({ error: 'Lỗi kết nối đến T3' });
-}
+
+    // Lưu tạm để xử lý callback
+    const requestMapPath = './data/request.json';
+    let requestMap = {};
+    if (fs.existsSync(requestMapPath)) {
+      requestMap = JSON.parse(fs.readFileSync(requestMapPath, 'utf8'));
+    }
+
+    requestMap[response.data.request_id] = req.session.user?.username || 'guest';
+    fs.writeFileSync(requestMapPath, JSON.stringify(requestMap, null, 2));
 
     res.json(response.data);
   } catch (err) {
-    console.error('Lỗi nạp thẻ:', err.message);
-    res.status(500).json({ error: 'Lỗi khi gửi đến napthe.vn' });
+    console.error('❌ Lỗi gửi đến T3:', err.response?.data || err.message);
+    res.status(500).json({ error: 'Lỗi kết nối đến T3' });
   }
 });
+
 
 
 // Cấu hình view và static
