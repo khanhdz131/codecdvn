@@ -254,10 +254,8 @@ const partner_key = process.env.PARTNER_KEY;
 app.post('/napthe', async (req, res) => {
   const { type, menhgia, serial, pin } = req.body;
 
-<<<<<<< HEAD
-=======
   // Tạo chữ ký
->>>>>>> 492ad60b4824d758a40960363a6840929dcb7e2b
+
   const sign = crypto.createHash('md5')
     .update(partner_id + pin + serial + menhgia + partner_key)
     .digest('hex');
