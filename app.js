@@ -254,13 +254,21 @@ const partner_key = process.env.PARTNER_KEY;
 app.post('/napthe', async (req, res) => {
   const { type, menhgia, serial, pin } = req.body;
 
+<<<<<<< HEAD
+=======
+  // Tạo chữ ký
+>>>>>>> 492ad60b4824d758a40960363a6840929dcb7e2b
   const sign = crypto.createHash('md5')
     .update(partner_id + pin + serial + menhgia + partner_key)
     .digest('hex');
 
   try {
     const response = await axios.post('https://api.naptudong.com/cardv2', {
+<<<<<<< HEAD
       request_id: `${req.session.user?.username}_${Date.now()}`,
+=======
+      request_id: `${req.session.user?.username}_${Date.now()}`, // để nhận callback đúng user
+>>>>>>> 492ad60b4824d758a40960363a6840929dcb7e2b
       telco: type,
       amount: menhgia,
       serial: serial,
@@ -269,6 +277,7 @@ app.post('/napthe', async (req, res) => {
       sign: sign
     });
 
+<<<<<<< HEAD
     
 
     console.log('✅ Phản hồi từ T3:', response.data);
@@ -283,6 +292,20 @@ app.post('/napthe', async (req, res) => {
     requestMap[response.data.request_id] = req.session.user?.username || 'guest';
     fs.writeFileSync(requestMapPath, JSON.stringify(requestMap, null, 2));
 
+=======
+    console.log('✅ Phản hồi từ T3:', response.data);
+
+    // Lưu tạm để xử lý callback
+    const requestMapPath = './data/request.json';
+    let requestMap = {};
+    if (fs.existsSync(requestMapPath)) {
+      requestMap = JSON.parse(fs.readFileSync(requestMapPath, 'utf8'));
+    }
+
+    requestMap[response.data.request_id] = req.session.user?.username || 'guest';
+    fs.writeFileSync(requestMapPath, JSON.stringify(requestMap, null, 2));
+
+>>>>>>> 492ad60b4824d758a40960363a6840929dcb7e2b
     res.json(response.data);
   } catch (err) {
     console.error('❌ Lỗi gửi đến T3:', err.response?.data || err.message);
