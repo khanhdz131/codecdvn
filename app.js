@@ -246,68 +246,50 @@ app.post("/withdraw", (req, res) => {
 // -------------------- CÁC ROUTE KHÁC --------------------
 
 
-// Route hiển thị form nạp thẻ
-const axios = require('axios');
-const crypto = require('crypto');
+async function napTheTuDong({ partnerId, partnerKey, maThe, seri, loaiThe }) {
 
-const partner_id = process.env.PARTNER_ID;
-const partner_key = process.env.PARTNER_KEY;
-
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-
-// Tạo chữ ký MD5 để gửi cho web T3
-
-
-function taoChuKyMD5({ partner_key, code, command, partner_id, request_id, serial, telco }) {
-  const chuoiGoc = `${partner_key}${code}${command}${partner_id}${request_id}${serial}${telco}`;
-  return crypto.createHash('md5').update(chuoiGoc).digest('hex');
-
-}
-
-// Route xử lý nạp thẻ
-app.post('/nap-the', async (req, res) => {
-  const { telco, code, serial, amount } = req.body;
-
-  const partner_id = process.env.PARTNER_ID;
-  const partner_key = process.env.PARTNER_KEY;
-  const command = 'charging';
-  const request_id = Date.now().toString(); // Mã đơn hàng duy nhất
-
-  const sign = taoChuKyMD5({ partner_key, code, command, partner_id, request_id, serial, telco });
+  const browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
 
   try {
-    const response = await axios.post('https://naptudong.com/chargingws/v2', {
-      telco,
-      code,
-      serial,
-      amount,
-      request_id,
-      partner_id,
-      command,
-      sign
-    }, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+    await page.goto('https://web-t3-domain.com/nap-the', { waitUntil: 'networkidle2' });
 
-    console.log('Phản hồi từ Web T3:', response.data);
+    await page.type('#partner-id', partnerId);
+    await page.type('#partner-key', partnerKey);
+    await page.type('#ma-the', maThe);
+    await page.type('#seri-the', seri);
+    await page.select('#loai-the', loaiThe);
 
-    const ketQua = response.data;
+    await page.click('#btn-nap-the');
+    await page.waitForSelector('#ket-qua', { timeout: 5000 });
 
-    if (ketQua.status === 99) {
-      res.send(`<script>alert("Thẻ đang chờ xử lý"); window.location.href = "/cho-xu-ly";</script>`);
-    } else if (ketQua.status === 1) {
-      res.send(`<script>alert("✅ Nạp thành công!"); window.location.href = "/thanh-cong";</script>`);
-    } else {
-      res.send(`<script>alert("❌ Lỗi: ${ketQua.message}"); window.location.href = "/";</script>`);
-    }
+    const ketQua = await page.$eval('#ket-qua', el => el.innerText);
+    console.log('✅ Kết quả:', ketQua);
+    return ketQua;
+
   } catch (err) {
-    console.error('Lỗi khi gọi API:', err.response?.data || err.message);
-    res.send(`<script>alert("Lỗi hệ thống hoặc không gửi được thẻ"); window.location.href = "/";</script>`);
+    console.error('❌ Lỗi:', err.message);
+    return 'Lỗi: ' + err.message;
+  } finally {
+    await browser.close();
   }
+}
+
+// Webhook nhận yêu cầu nạp
+app.post('/napthe', async (req, res) => {
+  const { maThe, seri, loaiThe, soDT } = req.body;
+
+  const ketQua = await napTheTuDong({
+    partnerId: '16055972294',
+    partnerKey: 'a011a9931da7a3c4dfb26cdfca167f45',
+    maThe,
+    seri,
+    loaiThe
+  });
+
+  res.status(200).json({ ketQua });
 });
+
 
 
 
