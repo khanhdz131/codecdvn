@@ -112,7 +112,7 @@
 
     <!-- Tab Nạp Thẻ -->
     <div id="card" class="tab-content active">
-      <form action="/card" method="POST">
+      <form id="napthe-form">
         <div class="form-group">
           <label>Loại Thẻ</label>
           <select name="loaithe" required>
@@ -152,17 +152,14 @@
     <!-- Tab ATM/Momo -->
     <div id="atm" class="tab-content">
       <div class="atm-box">
-        <p><strong>Ngân hàng:</strong> Techcombank </p>
+        <p><strong>Ngân hàng:</strong> Techcombank</p>
         <p><strong>Chủ tài khoản:</strong> DINH QUOC KHANH</p>
         <p><strong>Số tài khoản:</strong> 1904032006</p>
-       
-        <p><strong>Nội dung chuyển khoản:</strong> ten+CHUYENTIEN_<%= username || '  CHUYENTIEN  ' %></p>
-        <p><strong>Số tài khoản:</strong> Nạp lâu xin vui lòng liên hệ tiktok: @robux_napthe để giải quyết</p>
-
+        <p><strong>Nội dung chuyển khoản:</strong> ten+CHUYENTIEN_<%= username || 'CHUYENTIEN' %></p>
+        <p><strong>Lưu ý:</strong> Nạp lâu xin vui lòng liên hệ TikTok: @robux_napthe để giải quyết</p>
         <div class="qr-box">
           <img src="/public/images/atm.jpg" alt="QR banking">
         </div>
-
         <button onclick="alert('Vui lòng chờ admin xác nhận sau khi chuyển khoản!')">Tôi đã chuyển khoản</button>
       </div>
     </div>
@@ -172,13 +169,41 @@
     function switchTab(tabId) {
       const tabs = document.querySelectorAll('.tab');
       const contents = document.querySelectorAll('.tab-content');
-
       tabs.forEach(tab => tab.classList.remove('active'));
       contents.forEach(content => content.classList.remove('active'));
-
       document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
       document.getElementById(tabId).classList.add('active');
     }
+
+    document.getElementById('napthe-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        loaithe: form.loaithe.value,
+        menhgia: form.menhgia.value,
+        mathe: form.mathe.value,
+        seri: form.seri.value
+      };
+
+      try {
+        const res = await fetch('/napthe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          alert('Nạp thẻ thành công!');
+          window.location.href = '/napthe/card';
+        } else {
+          alert('Lỗi: ' + result.message);
+        }
+      } catch (err) {
+        alert('Lỗi hệ thống: ' + err.message);
+      }
+    });
   </script>
 </body>
 </html>
