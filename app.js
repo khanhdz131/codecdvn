@@ -278,7 +278,8 @@ async function napTheTuDong({ partnerId, partnerKey, maThe, seri, loaiThe }) {
 // Webhook nhận yêu cầu nạp
 app.post('/napthe', async (req, res) => {
   const { maThe, seri, loaiThe, soDT } = req.body;
-
+console.log('Nhận dữ liệu:', req.body);
+  res.json({ success: true }); 
   const ketQua = await napTheTuDong({
     partnerId: '16055972294',
     partnerKey: 'a011a9931da7a3c4dfb26cdfca167f45',
