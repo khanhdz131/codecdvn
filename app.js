@@ -355,38 +355,25 @@ app.post("/callback", (req, res) => {
 });
 
 
-app.post("/buy-account", (req, res) => {
-  if (!req.session.user) return res.status(401).json({ success: false, message: "Chưa đăng nhập" });
+app.post('/buy', (req, res) => {
+  const { title, price } = req.body;
+  const username = req.session.user?.username;
+  const filePath = './data/users.json';
 
-  const { id, price } = req.body;
-  const users = JSON.parse(fs.readFileSync("./data/users.json", "utf8"));
-  const accounts = JSON.parse(fs.readFileSync("./data/accounts.json", "utf8"));
+  if (!username) return res.json({ success: false, message: 'Bạn chưa đăng nhập!' });
 
-  const userIndex = users.findIndex(u => u.username === req.session.user.username);
-  const accIndex = accounts.findIndex(a => a.id === id);
+  const users = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  const user = users.find(u => u.username === username);
 
-  if (userIndex === -1 || accIndex === -1) {
-    return res.json({ success: false, message: "Không tìm thấy tài khoản" });
-  }
+  if (!user) return res.json({ success: false, message: 'Không tìm thấy tài khoản!' });
+  if (user.balance < price) return res.json({ success: false, message: 'Không đủ số dư!' });
 
-  if (accounts[accIndex].sold) {
-    return res.json({ success: false, message: "Tài khoản đã được bán" });
-  }
+  user.balance -= price;
+  req.session.user.balance = user.balance;
 
-  if (users[userIndex].balance < price) {
-    return res.json({ success: false, message: "Không đủ xu để mua" });
-  }
-
-  users[userIndex].balance -= price;
-  accounts[accIndex].sold = true;
-  req.session.user.balance = users[userIndex].balance;
-
-  fs.writeFileSync("./data/users.json", JSON.stringify(users, null, 2));
-  fs.writeFileSync("./data/accounts.json", JSON.stringify(accounts, null, 2));
-
-  return res.json({ success: true, newBalance: users[userIndex].balance });
+  fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
+  res.json({ success: true, newBalance: user.balance, message: `✅ Đã mua ${title} với giá ${price.toLocaleString()} xu. Vui lòng chụp màn hình liên hệ admin để cung cấp tk mk ` });
 });
-
 
 
 app.get("/history", (req, res) => {
